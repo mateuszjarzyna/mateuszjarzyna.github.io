@@ -1,5 +1,5 @@
 ---
-title: "How to test a code that uses time - improve quality of your project, part 1"
+title: "How to test a code that uses time? - Improve quality of your project, part I"
 date: 2022-05-16T15:00:00Z
 draft: false
 description: "Java has amazing `java.time` package. There are few usefull classes like `LocalDateTime`, `ZonedDateTime`, `Instant` or `Clock`. But do you know how to use them? If you are using untestable `Instant.now()` syntax - you probably should read this post."
