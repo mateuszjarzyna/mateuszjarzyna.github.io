@@ -12,7 +12,9 @@ Timezones
 &lt;/h3>
 &lt;p>Because the Earth is moving, rotating all the time, the noon is in only one place at a time. This means that in other places must be earlier or later.&lt;/p>
 &lt;p>Imagine having a friend on the other side of the globe. You ask him to call you afternoon&amp;hellip;&lt;/p>
+&lt;img src="images/call-me.png" class="center" style="border-radius: 8px;" />
 &lt;p>&amp;hellip; but he doesn’t call and doesn’t answer his phone. Why?&lt;/p>
+&lt;img src="images/zzz.png" class="center" style="border-radius: 8px;" />
 &lt;p>You ask him to call at 5pm, but 5pm at his region will be in 10 hours, but in your region, in your country the 5pm is right now. What you see on your watch is called &lt;em>local time&lt;/em>. And your friend, on the other hand, has different local time. This is a known and already solved issue. Some years ago, some smart guy divided the Earth into smaller regions called the &lt;strong>time zones&lt;/strong>. If you and your friend are both in the same time zone, it means that the sun rises approximately at the same time in your house and in his house.&lt;/p>
 &lt;p>You probably already known this and understand the concept perfectly. But when you are coding, you should consciously decide whether you need to operate on local time or on the time with a time zone.&lt;/p>
 &lt;h3 id="timestamp">
@@ -21,8 +23,11 @@ Timestamp
 &lt;/h3>
 &lt;p>&lt;code>2022-04-22T18:00:00.000Z&lt;/code> is the really nice representation of the date, humans like it. However, your computer doesn&amp;rsquo;t. Machines prefer the numbers, one int &amp;gt; human-readable string. So, there is another representation of the date - timestamp. Timestamp is the point at the timeline.&lt;/p>
 &lt;p>Imagine an eruption of a volcano. The volcano exploded at 8am PST time, it was 8pm at ALMT zone. In the space, in the ISS was 2pm. The clue is that the eruption is an event on the Earth timeline.&lt;/p>
+&lt;img src="images/eruption.png" class="center" style="border-radius: 8px;" />
 &lt;p>We can write a date referring to that event, as we do with years. You probably know the notation &lt;em>Before Christ&lt;/em> or &lt;em>Current Era&lt;/em>, 2022 BC/CE, similar concept.&lt;/p>
+&lt;img src="images/timeline.png" class="center" style="border-radius: 8px;" />
 &lt;p>Now you can schedule a meeting with your friend using this precise notation.&lt;/p>
+&lt;img src="images/using-timestamp.png" class="center" style="border-radius: 8px;" />
 &lt;p>In computer since, commonly used is &lt;code>unix time&lt;/code>, the number of seconds (or milliseconds) that have elapsed since 1 January 1970, 00:00:00 UTC.&lt;/p>
 &lt;h3 id="timestamp-vs-local-date">
 Timestamp vs local date
