@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mateusz Jarzyna</title><link>https://mateuszjarzyna.github.io/</link><description>Recent content on Mateusz Jarzyna</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 11 Sep 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://mateuszjarzyna.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial</title><link>https://mateuszjarzyna.github.io/posts/erlang-peg/</link><pubDate>Mon, 11 Sep 2017 00:00:00 +0000</pubDate><guid>https://mateuszjarzyna.github.io/posts/erlang-peg/</guid><description>
+&lt;img src="https://mateuszjarzyna.github.io/posts/erlang-peg/cover.png"/>
+&lt;p>First we need to learn something about &lt;a href="https://en.wikipedia.org/wiki/Parsing_expression_grammar">PEG&lt;/a>. In short PEG is standard to describing a language. But it is still only a formal grammar. We need a parser. Huh, very complicated, isn’t it? So what do we need? A parser generator of course! You can use for example &lt;a href="https://github.com/seancribbs/neotoma">Neotoma&lt;/a>, very good, well documented parser generator for PEG grammar. Installation instruction you can find on &lt;a href="https://github.com/seancribbs/neotoma">project GitHub&lt;/a>, but you can also use &lt;a href="https://www.rebar3.org/docs/using-available-plugins#section-neotoma">plugin for Rebar3&lt;/a>.&lt;/p>
+&lt;h2 id="our-simple-object-notation">
+Our Simple Object Notation
+&lt;a href="#our-simple-object-notation" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>To familiarize with PEG and Neotoma we will create simple decoder (of course in last part we will create programming language) for our JSON-like format.&lt;/p>
+&lt;pre tabindex="0">&lt;code>(
+some_key : &amp;#34;asda&amp;#34;
+another_key : (
+inner : &amp;#34;uf&amp;#34;
+empty : ()
+)
+not_found : null
+)
+&lt;/code>&lt;/pre>&lt;p>Simple and functional.&lt;/p>
+&lt;h2 id="my-first-grammar">
+My first grammar
+&lt;a href="#my-first-grammar" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- begin end `
+Node
+`;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+&lt;/code>&lt;/pre>&lt;p>Not so clear for first look? Read some explanation, it is really simple.&lt;/p>
+&lt;p>We are creating grammar for &lt;code>oson&lt;/code>. &lt;code>oson&lt;/code> consists of (&lt;code>&amp;lt;-&lt;/code>) exactly one &lt;code>object&lt;/code>. Object means &lt;code>begin&lt;/code> and &lt;code>end&lt;/code>. Begin is the open bracket character, and &lt;code>end&lt;/code> is the &lt;code>)&lt;/code> char.&lt;/p>
+&lt;p>Now, &lt;code>~;&lt;/code> means return it as it is. Between &lt;code>and&lt;/code> and &lt;code>;&lt;/code> you can write Erlang code (without dot at the end). You have &lt;code>Node&lt;/code> variable, I will explain it later. Return it as it is (&lt;code>~;&lt;/code>) and returning &lt;code>Node&lt;/code> mean the same.&lt;/p>
+&lt;p>If it is not clear for you now, read more example, I promise, creating grammar is very simple.&lt;/p>
+&lt;h3 id="try-it">
+Try it
+&lt;a href="#try-it" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;pre tabindex="0">&lt;code>2&amp;gt; neotoma:file(&amp;#34;oson.peg&amp;#34;).
+ok
+3&amp;gt; c(oson).
+{ok,oson}
+4&amp;gt; oson:parse(&amp;#34;()&amp;#34;).
+[&amp;lt;&amp;lt;&amp;#34;(&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;)&amp;#34;&amp;gt;&amp;gt;]
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>In line 2 we are creating parser from grammar.&lt;/li>
+&lt;li>Line 3 – compile the parser.&lt;/li>
+&lt;li>Line 4 – Use our parser. () is a oson empty object.&lt;/li>
+&lt;/ul>
+&lt;p>Hmm, list with two strings. I will try to explain this&lt;/p>
+&lt;ol start="0">
+&lt;li>oson is a object&lt;/li>
+&lt;li>object is a list of begin and end&lt;/li>
+&lt;li>begin and end are strings – brackets chars&lt;/li>
+&lt;/ol>
+&lt;p>So, maybe you can name elements in this list?&lt;/p>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- begin_object:begin end_object:end `
+Node
+`;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+&lt;/code>&lt;/pre>&lt;pre tabindex="0">&lt;code>8&amp;gt; oson:parse(&amp;#34;()&amp;#34;).
+[{begin_object,&amp;lt;&amp;lt;&amp;#34;(&amp;#34;&amp;gt;&amp;gt;},{end_object,&amp;lt;&amp;lt;&amp;#34;)&amp;#34;&amp;gt;&amp;gt;}]
+&lt;/code>&lt;/pre>&lt;p>Proplist, see?&lt;/p>
+&lt;h3 id="node">
+Node
+&lt;a href="#node" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>In &lt;a href="https://github.com/seancribbs/neotoma/wiki">documentation&lt;/a>, you can read that&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;code>Node&lt;/code> is a list of the results from sub-expressions, which may be raw terminals or the transformations of other nonterminals.&lt;/p>
+&lt;/blockquote>
+&lt;p>So, what node is depends on context. It is hard to explain, you should start to “feel this”. If no, don’t worry, you will soon.&lt;/p>
+&lt;p>Remember, if you are not sure what Node is you can always print it&lt;/p>
+&lt;pre tabindex="0">&lt;code>io:format(&amp;#34;\n\n~p\n\n&amp;#34;, [Node]),
+&lt;/code>&lt;/pre>&lt;h3 id="its-time-to-store-some-data">
+It’s time to store some data
+&lt;a href="#its-time-to-store-some-data" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>In our oson format we will sore data as key – value.
+We will start from the basics. Key will be a atom. For value only &lt;code>null&lt;/code> allowed.&lt;/p>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- begin k:key &amp;#34;:&amp;#34; v:value end `
+Node
+`;
+key &amp;lt;- atom ~;
+value &amp;lt;- null ~;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+atom &amp;lt;- [a-zA-Z0-9_]+ ~;
+null &amp;lt;- &amp;#34;null&amp;#34; `
+null
+`;
+&lt;/code>&lt;/pre>&lt;p>As you can see when someone will type &lt;code>null&lt;/code> as a &lt;code>value&lt;/code> we will return null atom (Erlang atom) instead of string.&lt;/p>
+&lt;p>Key is a similar to atom. As key you can use (I hope you know &lt;a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression&lt;/a>) one or more small or big letter or digits or underscore.&lt;/p>
+&lt;p>Try&lt;/p>
+&lt;pre tabindex="0">&lt;code>10&amp;gt; oson:parse(&amp;#34;(first_key:null)&amp;#34;).
+[&amp;lt;&amp;lt;&amp;#34;(&amp;#34;&amp;gt;&amp;gt;,
+{k,[&amp;lt;&amp;lt;&amp;#34;f&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;i&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;r&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;s&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;t&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;_&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;k&amp;#34;&amp;gt;&amp;gt;,
+&amp;lt;&amp;lt;&amp;#34;e&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;y&amp;#34;&amp;gt;&amp;gt;]},
+&amp;lt;&amp;lt;&amp;#34;:&amp;#34;&amp;gt;&amp;gt;,
+{v,null},
+&amp;lt;&amp;lt;&amp;#34;)&amp;#34;&amp;gt;&amp;gt;]
+&lt;/code>&lt;/pre>&lt;p>Oops, this is not the result you can except from good parser. But let’s analyze it.&lt;/p>
+&lt;p>You can see here list with open object character, tuple with key (but key is not string but list of binaries, &lt;code>list_to_binary/1&lt;/code> is the solution btw). Some colon, tuple with value (null atom as wanted). And &lt;code>)&lt;/code>.&lt;/p>
+&lt;p>It is easy to clean this mess.&lt;/p>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- begin k:key &amp;#34;:&amp;#34; v:value end `
+Key = proplists:get_value(k, Node),
+Value = proplists:get_value(v, Node),
+{object, Key, Value}
+`;
+key &amp;lt;- atom ~;
+value &amp;lt;- null ~;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+atom &amp;lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &amp;lt;- &amp;#34;null&amp;#34; `
+null
+`;
+&lt;/code>&lt;/pre>&lt;pre tabindex="0">&lt;code>17&amp;gt; oson:parse(&amp;#34;(first_key:null)&amp;#34;).
+{object,&amp;lt;&amp;lt;&amp;#34;first_key&amp;#34;&amp;gt;&amp;gt;,null}
+&lt;/code>&lt;/pre>&lt;p>Much better.&lt;/p>
+&lt;p>But we have here still one small problem. Can you see it?&lt;/p>
+&lt;h3 id="ignore-spaces-new-lines-etc">
+Ignore spaces, new lines, etc&amp;hellip;
+&lt;a href="#ignore-spaces-new-lines-etc" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;pre tabindex="0">&lt;code>Create file example1.oson
+(
+second_key : null
+)
+&lt;/code>&lt;/pre>&lt;pre tabindex="0">&lt;code>19&amp;gt; oson:file(&amp;#34;example1.oson&amp;#34;).
+{fail,{expected,{string,&amp;lt;&amp;lt;&amp;#34;(&amp;#34;&amp;gt;&amp;gt;},{\{line,1},{column,1}}}}
+&lt;/code>&lt;/pre>&lt;p>Oops, parser expected “start object char” not new line (this file starts with new line, plugin I am using can’t show it). Solution? Simple again – create set of chars that you want to ignore and add to grammar in places when user can use it. How to ignore? Just don’t use it.&lt;/p>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- white begin white k:key white &amp;#34;:&amp;#34; white v:value white end white `
+Key = proplists:get_value(k, Node),
+Value = proplists:get_value(v, Node),
+{object, Key, Value}
+`;
+key &amp;lt;- atom ~;
+value &amp;lt;- null ~;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+atom &amp;lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &amp;lt;- &amp;#34;null&amp;#34; `
+null
+`;
+white &amp;lt;- [ \t\n\s\r]* ~;
+&lt;/code>&lt;/pre>&lt;p>We can use white characters in six places. Remember that better is add too much redundant &lt;code>white&lt;/code> than forgot in one places.&lt;/p>
+&lt;pre tabindex="0">&lt;code>22&amp;gt; oson:file(&amp;#34;example1.oson&amp;#34;).
+{object,&amp;lt;&amp;lt;&amp;#34;second_key&amp;#34;&amp;gt;&amp;gt;,null}
+&lt;/code>&lt;/pre>&lt;h3 id="more-objects">
+More objects
+&lt;a href="#more-objects" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>For now grammar accepts exactly one object with exactly one key – value pair (where value can be only null. We will fix it in next chapter).&lt;/p>
+&lt;p>So, how to repeat in PEG? Use brackets.&lt;/p>
+&lt;p>I want word “Hi” one or more time.&lt;/p>
+&lt;pre tabindex="0">&lt;code>repeat &amp;lt;- (&amp;#39;Hi&amp;#39;)+ ~;
+&lt;/code>&lt;/pre>&lt;pre tabindex="0">&lt;code>56&amp;gt; repeat:parse(&amp;#34;&amp;#34;).
+{fail,{expected,{at_least_one,{string,&amp;lt;&amp;lt;&amp;#34;Hi&amp;#34;&amp;gt;&amp;gt;}},
+{\{line,1},{column,1}}}}
+57&amp;gt; repeat:parse(&amp;#34;Hi&amp;#34;).
+[&amp;lt;&amp;lt;&amp;#34;Hi&amp;#34;&amp;gt;&amp;gt;]
+58&amp;gt; repeat:parse(&amp;#34;HiHiHi&amp;#34;).
+[&amp;lt;&amp;lt;&amp;#34;Hi&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;Hi&amp;#34;&amp;gt;&amp;gt;,&amp;lt;&amp;lt;&amp;#34;Hi&amp;#34;&amp;gt;&amp;gt;]
+&lt;/code>&lt;/pre>&lt;p>&lt;code>+&lt;/code> means one or more, &lt;code>*&lt;/code> means zero or more and &lt;code>?&lt;/code> means zero or one.&lt;/p>
+&lt;p>So, in our object we want zero or n key-value pairs. How to do this?&lt;/p>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- white begin white p:(pair)* white end white `
+%io:format(&amp;#34;\n\nNode = ~p\n\n&amp;#34;, [Node]),
+PairsNode = proplists:get_value(p, Node),
+%io:format(&amp;#34;\n\nPairsNode = ~p\n\n&amp;#34;, [PairsNode]),
+Pairs = [{proplists:get_value(k, P), proplists:get_value(v, P)} || P &amp;lt;- PairsNode],
+{object, Pairs}
+`;
+pair &amp;lt;- white k:key white &amp;#34;:&amp;#34; white v:value white ~;
+key &amp;lt;- atom ~;
+value &amp;lt;- null ~;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+atom &amp;lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &amp;lt;- &amp;#34;null&amp;#34; `
+null
+`;
+white &amp;lt;- [ \t\n\s\r]* ~;
+&lt;/code>&lt;/pre>&lt;p>Please pay attention on how I debugged this grammar. Trick with printing Node is very useful.&lt;/p>
+&lt;pre tabindex="0">&lt;code>84&amp;gt; oson:file(&amp;#34;example2.oson&amp;#34;).
+{object,[{&amp;lt;&amp;lt;&amp;#34;some_key&amp;#34;&amp;gt;&amp;gt;,null},{&amp;lt;&amp;lt;&amp;#34;another_key&amp;#34;&amp;gt;&amp;gt;,null}]}
+&lt;/code>&lt;/pre>&lt;h3 id="something-more-than-null">
+Something more than null?
+&lt;a href="#something-more-than-null" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Value should be null or string or another object. Simplest task in this post. But first we have to learn new symbol &lt;code>/&lt;/code> – or.&lt;/p>
+&lt;p>Ok, define string&lt;/p>
+&lt;pre tabindex="0">&lt;code>&amp;#39;&amp;#34;&amp;#39; str:[^&amp;#34;]* &amp;#39;&amp;#34;&amp;#39;
+&lt;/code>&lt;/pre>&lt;p>Every char except &lt;code>&amp;quot;&lt;/code> between quotation marks. I thinks it’s the simplest way. Not perfect, but for this example enough. In your production application spend more time on this regexp and do it better.&lt;/p>
+&lt;pre tabindex="0">&lt;code>oson &amp;lt;- object ~;
+object &amp;lt;- white begin white p:(pair)* white end white `
+PairsNode = proplists:get_value(p, Node),
+Pairs = [P || P &amp;lt;- PairsNode],
+{object, Pairs}
+`;
+pair &amp;lt;- white k:key white &amp;#34;:&amp;#34; white v:value white `
+{proplists:get_value(k, Node), proplists:get_value(v, Node)}
+`;
+key &amp;lt;- atom ~;
+value &amp;lt;- string / object / null ~;
+begin &amp;lt;- &amp;#34;(&amp;#34; ~;
+end &amp;lt;- &amp;#34;)&amp;#34; ~;
+atom &amp;lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &amp;lt;- &amp;#34;null&amp;#34; `
+null
+`;
+string &amp;lt;- &amp;#39;&amp;#34;&amp;#39; str:[^&amp;#34;]* &amp;#39;&amp;#34;&amp;#39; `
+{string, list_to_binary(proplists:get_value(str, Node))}
+`;
+white &amp;lt;- [ \t\n\s\r]* ~;
+&lt;/code>&lt;/pre>&lt;p>Do you see and understand all changes?&lt;/p>
+&lt;p>example3.oson&lt;/p>
+&lt;pre tabindex="0">&lt;code>(
+some_key : &amp;#34;asda&amp;#34;
+another_key : (
+inner : &amp;#34;uf&amp;#34;
+empty : ()
+)
+not_found : null
+)
+&lt;/code>&lt;/pre>&lt;pre tabindex="0">&lt;code>90&amp;gt; oson:file(&amp;#34;example3.oson&amp;#34;).
+{object,[{&amp;lt;&amp;lt;&amp;#34;some_key&amp;#34;&amp;gt;&amp;gt;,{string,&amp;lt;&amp;lt;&amp;#34;asda&amp;#34;&amp;gt;&amp;gt;}},
+{&amp;lt;&amp;lt;&amp;#34;another_key&amp;#34;&amp;gt;&amp;gt;,
+{object,[{&amp;lt;&amp;lt;&amp;#34;inner&amp;#34;&amp;gt;&amp;gt;,{string,&amp;lt;&amp;lt;&amp;#34;uf&amp;#34;&amp;gt;&amp;gt;}},
+{&amp;lt;&amp;lt;&amp;#34;empty&amp;#34;&amp;gt;&amp;gt;,{object,[]}}]}},
+{&amp;lt;&amp;lt;&amp;#34;not_found&amp;#34;&amp;gt;&amp;gt;,null}]}
+&lt;/code>&lt;/pre>&lt;p>Perfect.&lt;/p>
+&lt;h2 id="good-job">
+Good job!
+&lt;a href="#good-job" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>You made your first decoder! Now you should understand how to to create grammar, how PEG and Neotoma works. To be sure you are ready to create your own programming language you need some practice:&lt;/p>
+&lt;ol start="0">
+&lt;li>As a value you can use only string, another object or null. Add numbers.&lt;/li>
+&lt;li>Storing data without lists is not really useful. Add lists of strings (and digits and objects)&lt;/li>
+&lt;li>Now in file must be exactly one object. Allow files without objects (empty or white spaces)&lt;/li>
+&lt;/ol>
+&lt;p>&lt;a href="https://github.com/mateuszjarzyna/Blog/tree/master/programming%20language/oson">All sources available on my GitHub.&lt;/a>&lt;/p></description></item></channel></rss>

@@ -1,0 +1,199 @@
+<!doctype html><html lang=en><head><title>Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial ::
+Mateusz Jarzyna</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="First we need to learn something about PEG. In short PEG is standard to describing a language. But it is still only a formal grammar. We need a parser. Huh, very complicated, isn’t it? So what do we need? A parser generator of course! You can use for example Neotoma, very good, well documented parser generator for PEG grammar. Installation instruction you can find on project GitHub, but you can also use plugin for Rebar3."><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://mateuszjarzyna.github.io/posts/erlang-peg/><link rel=stylesheet href=https://mateuszjarzyna.github.io/assets/style.css><link rel=stylesheet href=https://mateuszjarzyna.github.io/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://mateuszjarzyna.github.io/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://mateuszjarzyna.github.io/img/favicon.png><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://mateuszjarzyna.github.io/posts/erlang-peg/cover.png"><meta name=twitter:title content="Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial"><meta name=twitter:description content="First we need to learn something about PEG. In short PEG is standard to describing a language. But it is still only a formal grammar. We need a parser. Huh, very complicated, isn’t it? So what do we need? A parser generator of course! You can use for example Neotoma, very good, well documented parser generator for PEG grammar. Installation instruction you can find on project GitHub, but you can also use plugin for Rebar3."><meta property="og:title" content="Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial"><meta property="og:description" content="First we need to learn something about PEG. In short PEG is standard to describing a language. But it is still only a formal grammar. We need a parser. Huh, very complicated, isn’t it? So what do we need? A parser generator of course! You can use for example Neotoma, very good, well documented parser generator for PEG grammar. Installation instruction you can find on project GitHub, but you can also use plugin for Rebar3."><meta property="og:type" content="article"><meta property="og:url" content="https://mateuszjarzyna.github.io/posts/erlang-peg/"><meta property="og:image" content="https://mateuszjarzyna.github.io/posts/erlang-peg/cover.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-09-11T00:00:00+00:00"><meta property="article:modified_time" content="2017-09-11T00:00:00+00:00"><meta property="og:site_name" content="Mateusz Jarzyna"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>Mateusz Jarzyna</span>
+<span class=logo__cursor></span></a>
+<span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/about>About</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/about>About</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial</h1><div class=post-meta><span class=post-date>2017-09-11</span>
+<span class=post-read-time>— 7 min read</span></div><figure class=post-cover><img src=https://mateuszjarzyna.github.io/posts/erlang-peg/cover.png alt="Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial"></figure><div class=post-content><h2>Table of Contents</h2><aside class=table-of-contents><nav id=TableOfContents><ul><li><a href=#our-simple-object-notation>Our Simple Object Notation</a></li><li><a href=#my-first-grammar>My first grammar</a><ul><li><a href=#try-it>Try it</a></li><li><a href=#node>Node</a></li><li><a href=#its-time-to-store-some-data>It’s time to store some data</a></li><li><a href=#ignore-spaces-new-lines-etc>Ignore spaces, new lines, etc&mldr;</a></li><li><a href=#more-objects>More objects</a></li><li><a href=#something-more-than-null>Something more than null?</a></li></ul></li><li><a href=#good-job>Good job!</a></li></ul></nav></aside><p>First we need to learn something about <a href=https://en.wikipedia.org/wiki/Parsing_expression_grammar>PEG</a>. In short PEG is standard to describing a language. But it is still only a formal grammar. We need a parser. Huh, very complicated, isn’t it? So what do we need? A parser generator of course! You can use for example <a href=https://github.com/seancribbs/neotoma>Neotoma</a>, very good, well documented parser generator for PEG grammar. Installation instruction you can find on <a href=https://github.com/seancribbs/neotoma>project GitHub</a>, but you can also use <a href=https://www.rebar3.org/docs/using-available-plugins#section-neotoma>plugin for Rebar3</a>.</p><h2 id=our-simple-object-notation>Our Simple Object Notation
+<a href=#our-simple-object-notation class=h-anchor aria-hidden=true>#</a></h2><p>To familiarize with PEG and Neotoma we will create simple decoder (of course in last part we will create programming language) for our JSON-like format.</p><pre tabindex=0><code>(
+    some_key : &#34;asda&#34;
+    another_key : (
+        inner : &#34;uf&#34;
+        empty : ()
+    )
+    not_found : null
+)
+</code></pre><p>Simple and functional.</p><h2 id=my-first-grammar>My first grammar
+<a href=#my-first-grammar class=h-anchor aria-hidden=true>#</a></h2><pre tabindex=0><code>oson &lt;- object ~;
+ 
+object &lt;- begin end `
+   Node
+`;
+ 
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+</code></pre><p>Not so clear for first look? Read some explanation, it is really simple.</p><p>We are creating grammar for <code>oson</code>. <code>oson</code> consists of (<code>&lt;-</code>) exactly one <code>object</code>. Object means <code>begin</code> and <code>end</code>. Begin is the open bracket character, and <code>end</code> is the <code>)</code> char.</p><p>Now, <code>~;</code> means return it as it is. Between <code>and</code> and <code>;</code> you can write Erlang code (without dot at the end). You have <code>Node</code> variable, I will explain it later. Return it as it is (<code>~;</code>) and returning <code>Node</code> mean the same.</p><p>If it is not clear for you now, read more example, I promise, creating grammar is very simple.</p><h3 id=try-it>Try it
+<a href=#try-it class=h-anchor aria-hidden=true>#</a></h3><pre tabindex=0><code>2&gt; neotoma:file(&#34;oson.peg&#34;).
+ok
+3&gt; c(oson).
+{ok,oson}
+4&gt; oson:parse(&#34;()&#34;). 
+[&lt;&lt;&#34;(&#34;&gt;&gt;,&lt;&lt;&#34;)&#34;&gt;&gt;]
+</code></pre><ul><li>In line 2 we are creating parser from grammar.</li><li>Line 3 – compile the parser.</li><li>Line 4 – Use our parser. () is a oson empty object.</li></ul><p>Hmm, list with two strings. I will try to explain this</p><ol start=0><li>oson is a object</li><li>object is a list of begin and end</li><li>begin and end are strings – brackets chars</li></ol><p>So, maybe you can name elements in this list?</p><pre tabindex=0><code>oson &lt;- object ~;
+ 
+object &lt;- begin_object:begin end_object:end `
+    Node
+`;
+ 
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+</code></pre><pre tabindex=0><code>8&gt; oson:parse(&#34;()&#34;). 
+[{begin_object,&lt;&lt;&#34;(&#34;&gt;&gt;},{end_object,&lt;&lt;&#34;)&#34;&gt;&gt;}]
+</code></pre><p>Proplist, see?</p><h3 id=node>Node
+<a href=#node class=h-anchor aria-hidden=true>#</a></h3><p>In <a href=https://github.com/seancribbs/neotoma/wiki>documentation</a>, you can read that</p><blockquote><p><code>Node</code> is a list of the results from sub-expressions, which may be raw terminals or the transformations of other nonterminals.</p></blockquote><p>So, what node is depends on context. It is hard to explain, you should start to “feel this”. If no, don’t worry, you will soon.</p><p>Remember, if you are not sure what Node is you can always print it</p><pre tabindex=0><code>io:format(&#34;\n\n~p\n\n&#34;, [Node]),
+</code></pre><h3 id=its-time-to-store-some-data>It’s time to store some data
+<a href=#its-time-to-store-some-data class=h-anchor aria-hidden=true>#</a></h3><p>In our oson format we will sore data as key – value.
+We will start from the basics. Key will be a atom. For value only <code>null</code> allowed.</p><pre tabindex=0><code>oson &lt;- object ~;
+ 
+object &lt;- begin k:key &#34;:&#34; v:value end `
+    Node
+`;
+ 
+key &lt;- atom ~;
+value &lt;- null ~;
+ 
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+atom &lt;- [a-zA-Z0-9_]+ ~;
+null &lt;- &#34;null&#34; `
+    null
+`;
+</code></pre><p>As you can see when someone will type <code>null</code> as a <code>value</code> we will return null atom (Erlang atom) instead of string.</p><p>Key is a similar to atom. As key you can use (I hope you know <a href=https://en.wikipedia.org/wiki/Regular_expression>regular expression</a>) one or more small or big letter or digits or underscore.</p><p>Try</p><pre tabindex=0><code>10&gt; oson:parse(&#34;(first_key:null)&#34;).
+[&lt;&lt;&#34;(&#34;&gt;&gt;,
+ {k,[&lt;&lt;&#34;f&#34;&gt;&gt;,&lt;&lt;&#34;i&#34;&gt;&gt;,&lt;&lt;&#34;r&#34;&gt;&gt;,&lt;&lt;&#34;s&#34;&gt;&gt;,&lt;&lt;&#34;t&#34;&gt;&gt;,&lt;&lt;&#34;_&#34;&gt;&gt;,&lt;&lt;&#34;k&#34;&gt;&gt;,
+ &lt;&lt;&#34;e&#34;&gt;&gt;,&lt;&lt;&#34;y&#34;&gt;&gt;]},
+ &lt;&lt;&#34;:&#34;&gt;&gt;,
+ {v,null},
+ &lt;&lt;&#34;)&#34;&gt;&gt;]
+</code></pre><p>Oops, this is not the result you can except from good parser. But let’s analyze it.</p><p>You can see here list with open object character, tuple with key (but key is not string but list of binaries, <code>list_to_binary/1</code> is the solution btw). Some colon, tuple with value (null atom as wanted). And <code>)</code>.</p><p>It is easy to clean this mess.</p><pre tabindex=0><code>oson &lt;- object ~;
+ 
+object &lt;- begin k:key &#34;:&#34; v:value end `
+    Key = proplists:get_value(k, Node),
+    Value = proplists:get_value(v, Node),
+    {object, Key, Value}
+`;
+ 
+key &lt;- atom ~;
+value &lt;- null ~;
+ 
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+atom &lt;- [a-zA-Z0-9_]+ `
+    list_to_binary(Node)
+`;
+null &lt;- &#34;null&#34; `
+    null
+`;
+</code></pre><pre tabindex=0><code>17&gt; oson:parse(&#34;(first_key:null)&#34;).
+{object,&lt;&lt;&#34;first_key&#34;&gt;&gt;,null}
+</code></pre><p>Much better.</p><p>But we have here still one small problem. Can you see it?</p><h3 id=ignore-spaces-new-lines-etc>Ignore spaces, new lines, etc&mldr;
+<a href=#ignore-spaces-new-lines-etc class=h-anchor aria-hidden=true>#</a></h3><pre tabindex=0><code>Create file example1.oson
+
+(
+second_key : null
+)
+</code></pre><pre tabindex=0><code>19&gt; oson:file(&#34;example1.oson&#34;).
+{fail,{expected,{string,&lt;&lt;&#34;(&#34;&gt;&gt;},{\{line,1},{column,1}}}}
+</code></pre><p>Oops, parser expected “start object char” not new line (this file starts with new line, plugin I am using can’t show it). Solution? Simple again – create set of chars that you want to ignore and add to grammar in places when user can use it. How to ignore? Just don’t use it.</p><pre tabindex=0><code>oson &lt;- object ~;
+
+object &lt;- white begin white k:key white &#34;:&#34; white v:value white end white `
+Key = proplists:get_value(k, Node),
+Value = proplists:get_value(v, Node),
+{object, Key, Value}
+`;
+
+key &lt;- atom ~;
+value &lt;- null ~;
+
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+atom &lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &lt;- &#34;null&#34; `
+null
+`;
+white &lt;- [ \t\n\s\r]* ~;
+</code></pre><p>We can use white characters in six places. Remember that better is add too much redundant <code>white</code> than forgot in one places.</p><pre tabindex=0><code>22&gt; oson:file(&#34;example1.oson&#34;).
+{object,&lt;&lt;&#34;second_key&#34;&gt;&gt;,null}
+</code></pre><h3 id=more-objects>More objects
+<a href=#more-objects class=h-anchor aria-hidden=true>#</a></h3><p>For now grammar accepts exactly one object with exactly one key – value pair (where value can be only null. We will fix it in next chapter).</p><p>So, how to repeat in PEG? Use brackets.</p><p>I want word “Hi” one or more time.</p><pre tabindex=0><code>repeat &lt;- (&#39;Hi&#39;)+ ~;
+</code></pre><pre tabindex=0><code>56&gt; repeat:parse(&#34;&#34;).
+{fail,{expected,{at_least_one,{string,&lt;&lt;&#34;Hi&#34;&gt;&gt;}},
+{\{line,1},{column,1}}}}
+57&gt; repeat:parse(&#34;Hi&#34;).
+[&lt;&lt;&#34;Hi&#34;&gt;&gt;]
+58&gt; repeat:parse(&#34;HiHiHi&#34;).
+[&lt;&lt;&#34;Hi&#34;&gt;&gt;,&lt;&lt;&#34;Hi&#34;&gt;&gt;,&lt;&lt;&#34;Hi&#34;&gt;&gt;]
+</code></pre><p><code>+</code> means one or more, <code>*</code> means zero or more and <code>?</code> means zero or one.</p><p>So, in our object we want zero or n key-value pairs. How to do this?</p><pre tabindex=0><code>oson &lt;- object ~;
+
+object &lt;- white begin white p:(pair)* white end white `
+%io:format(&#34;\n\nNode = ~p\n\n&#34;, [Node]),
+PairsNode = proplists:get_value(p, Node),
+%io:format(&#34;\n\nPairsNode = ~p\n\n&#34;, [PairsNode]),
+Pairs = [{proplists:get_value(k, P), proplists:get_value(v, P)} || P &lt;- PairsNode],
+{object, Pairs}
+`;
+
+pair &lt;- white k:key white &#34;:&#34; white v:value white ~;
+key &lt;- atom ~;
+value &lt;- null ~;
+
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+atom &lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &lt;- &#34;null&#34; `
+null
+`;
+white &lt;- [ \t\n\s\r]* ~;
+</code></pre><p>Please pay attention on how I debugged this grammar. Trick with printing Node is very useful.</p><pre tabindex=0><code>84&gt; oson:file(&#34;example2.oson&#34;).
+{object,[{&lt;&lt;&#34;some_key&#34;&gt;&gt;,null},{&lt;&lt;&#34;another_key&#34;&gt;&gt;,null}]}
+</code></pre><h3 id=something-more-than-null>Something more than null?
+<a href=#something-more-than-null class=h-anchor aria-hidden=true>#</a></h3><p>Value should be null or string or another object. Simplest task in this post. But first we have to learn new symbol <code>/</code> – or.</p><p>Ok, define string</p><pre tabindex=0><code>&#39;&#34;&#39; str:[^&#34;]* &#39;&#34;&#39;
+</code></pre><p>Every char except <code>"</code> between quotation marks. I thinks it’s the simplest way. Not perfect, but for this example enough. In your production application spend more time on this regexp and do it better.</p><pre tabindex=0><code>oson &lt;- object ~;
+
+object &lt;- white begin white p:(pair)* white end white `
+PairsNode = proplists:get_value(p, Node),
+Pairs = [P || P &lt;- PairsNode],
+{object, Pairs}
+`;
+
+pair &lt;- white k:key white &#34;:&#34; white v:value white `
+{proplists:get_value(k, Node), proplists:get_value(v, Node)}
+`;
+key &lt;- atom ~;
+value &lt;- string / object / null ~;
+
+begin &lt;- &#34;(&#34; ~;
+end &lt;- &#34;)&#34; ~;
+atom &lt;- [a-zA-Z0-9_]+ `
+list_to_binary(Node)
+`;
+null &lt;- &#34;null&#34; `
+null
+`;
+string &lt;- &#39;&#34;&#39; str:[^&#34;]* &#39;&#34;&#39; `
+{string, list_to_binary(proplists:get_value(str, Node))}
+`;
+white &lt;- [ \t\n\s\r]* ~;
+</code></pre><p>Do you see and understand all changes?</p><p>example3.oson</p><pre tabindex=0><code>(
+some_key : &#34;asda&#34;
+another_key : (
+inner : &#34;uf&#34;
+empty : ()
+)
+not_found : null
+)
+</code></pre><pre tabindex=0><code>90&gt; oson:file(&#34;example3.oson&#34;).
+{object,[{&lt;&lt;&#34;some_key&#34;&gt;&gt;,{string,&lt;&lt;&#34;asda&#34;&gt;&gt;}},
+{&lt;&lt;&#34;another_key&#34;&gt;&gt;,
+{object,[{&lt;&lt;&#34;inner&#34;&gt;&gt;,{string,&lt;&lt;&#34;uf&#34;&gt;&gt;}},
+{&lt;&lt;&#34;empty&#34;&gt;&gt;,{object,[]}}]}},
+{&lt;&lt;&#34;not_found&#34;&gt;&gt;,null}]}
+</code></pre><p>Perfect.</p><h2 id=good-job>Good job!
+<a href=#good-job class=h-anchor aria-hidden=true>#</a></h2><p>You made your first decoder! Now you should understand how to to create grammar, how PEG and Neotoma works. To be sure you are ready to create your own programming language you need some practice:</p><ol start=0><li>As a value you can use only string, another object or null. Add numbers.</li><li>Storing data without lists is not really useful. Add lists of strings (and digits and objects)</li><li>Now in file must be exactly one object. Allow files without objects (empty or white spaces)</li></ol><p><a href=https://github.com/mateuszjarzyna/Blog/tree/master/programming%20language/oson>All sources available on my GitHub.</a></p></div><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mateuszjarzyna-github-io.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>Mateusz Jarzyna</span>
+<span class=logo__cursor></span></a><div class=copyright><span>© 2022 Powered by
+<a href=https://gohugo.io target=_blank rel=noopener>Hugo</a></span>
+<span>Theme created by
+<a href=https://twitter.com/panr target=_blank rel=noopener>panr</a></span></div></div></footer><script src=https://mateuszjarzyna.github.io/assets/main.js></script>
+<script src=https://mateuszjarzyna.github.io/assets/prism.js></script></div></body></html>
