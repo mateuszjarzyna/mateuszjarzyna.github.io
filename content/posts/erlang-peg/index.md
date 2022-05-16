@@ -190,7 +190,7 @@ second_key : null
 
 ```
 19> oson:file("example1.oson").
-{fail,{expected,{string,<<"(">>},\{{line,1},{column,1}}}}
+{fail,{expected,{string,<<"(">>},{\{line,1},{column,1}}}}
 ```
 
 Oops, parser expected “start object char” not new line (this file starts with new line, plugin I am using can’t show it). Solution? Simple again – create set of chars that you want to ignore and add to grammar in places when user can use it. How to ignore? Just don’t use it.
@@ -240,7 +240,7 @@ repeat <- ('Hi')+ ~;
 ```
 56> repeat:parse("").
 {fail,{expected,{at_least_one,{string,<<"Hi">>}},
-\{{line,1},{column,1}}}}
+{\{line,1},{column,1}}}}
 57> repeat:parse("Hi").
 [<<"Hi">>]
 58> repeat:parse("HiHiHi").
