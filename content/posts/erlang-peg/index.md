@@ -2,7 +2,6 @@
 title: "Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial"
 cover: "cover.png"
 useRelativeCover: true
-
 date: 2017-09-11T00:00:00Z
 draft: false
 ---
@@ -53,7 +52,7 @@ If it is not clear for you now, read more example, I promise, creating grammar i
 2> neotoma:file("oson.peg").
 ok
 3> c(oson).
-{ok,oson}
+\{ok,oson}
 4> oson:parse("()"). 
 [<<"(">>,<<")">>]
 ```
@@ -83,7 +82,7 @@ end <- ")" ~;
 
 ```
 8> oson:parse("()"). 
-[{begin_object,<<"(">>},{end_object,<<")">>}]
+[\{begin_object,<<"(">>},\{end_object,<<")">>}]
 ```
 
 Proplist, see?
@@ -134,10 +133,10 @@ Try
 ```
 10> oson:parse("(first_key:null)").
 [<<"(">>,
- {k,[<<"f">>,<<"i">>,<<"r">>,<<"s">>,<<"t">>,<<"_">>,<<"k">>,
+ \{k,[<<"f">>,<<"i">>,<<"r">>,<<"s">>,<<"t">>,<<"_">>,<<"k">>,
  <<"e">>,<<"y">>]},
  <<":">>,
- {v,null},
+ \{v,null},
  <<")">>]
 ```
 
@@ -153,7 +152,7 @@ oson <- object ~;
 object <- begin k:key ":" v:value end `
     Key = proplists:get_value(k, Node),
     Value = proplists:get_value(v, Node),
-    {object, Key, Value}
+    \{object, Key, Value}
 `;
  
 key <- atom ~;
@@ -171,7 +170,7 @@ null <- "null" `
 
 ```
 17> oson:parse("(first_key:null)").
-{object,<<"first_key">>,null}
+\{object,<<"first_key">>,null}
 
 ```
 
@@ -191,7 +190,7 @@ second_key : null
 
 ```
 19> oson:file("example1.oson").
-{fail,{expected,{string,<<"(">>},{{line,1},{column,1}}}}
+\{fail,\{expected,\{string,<<"(">>},\{\{line,1},\{column,1}}}}
 ```
 
 Oops, parser expected “start object char” not new line (this file starts with new line, plugin I am using can’t show it). Solution? Simple again – create set of chars that you want to ignore and add to grammar in places when user can use it. How to ignore? Just don’t use it.
@@ -202,7 +201,7 @@ oson <- object ~;
 object <- white begin white k:key white ":" white v:value white end white `
 Key = proplists:get_value(k, Node),
 Value = proplists:get_value(v, Node),
-{object, Key, Value}
+\{object, Key, Value}
 `;
 
 key <- atom ~;
@@ -223,7 +222,7 @@ We can use white characters in six places. Remember that better is add too much 
 
 ```
 22> oson:file("example1.oson").
-{object,<<"second_key">>,null}
+\{object,<<"second_key">>,null}
 ```
 
 ### More objects
@@ -240,8 +239,8 @@ repeat <- ('Hi')+ ~;
 
 ```
 56> repeat:parse("").
-{fail,{expected,{at_least_one,{string,<<"Hi">>}},
-{{line,1},{column,1}}}}
+\{fail,\{expected,\{at_least_one,\{string,<<"Hi">>}},
+\{\{line,1},\{column,1}}}}
 57> repeat:parse("Hi").
 [<<"Hi">>]
 58> repeat:parse("HiHiHi").
@@ -259,8 +258,8 @@ object <- white begin white p:(pair)* white end white `
 %io:format("\n\nNode = ~p\n\n", [Node]),
 PairsNode = proplists:get_value(p, Node),
 %io:format("\n\nPairsNode = ~p\n\n", [PairsNode]),
-Pairs = [{proplists:get_value(k, P), proplists:get_value(v, P)} || P <- PairsNode],
-{object, Pairs}
+Pairs = [\{proplists:get_value(k, P), proplists:get_value(v, P)} || P <- PairsNode],
+\{object, Pairs}
 `;
 
 pair <- white k:key white ":" white v:value white ~;
@@ -282,7 +281,7 @@ Please pay attention on how I debugged this grammar. Trick with printing Node is
 
 ```
 84> oson:file("example2.oson").
-{object,[{<<"some_key">>,null},{<<"another_key">>,null}]}
+\{object,[\{<<"some_key">>,null},\{<<"another_key">>,null}]}
 ```
 
 ### Something more than null?
@@ -303,11 +302,11 @@ oson <- object ~;
 object <- white begin white p:(pair)* white end white `
 PairsNode = proplists:get_value(p, Node),
 Pairs = [P || P <- PairsNode],
-{object, Pairs}
+\{object, Pairs}
 `;
 
 pair <- white k:key white ":" white v:value white `
-{proplists:get_value(k, Node), proplists:get_value(v, Node)}
+\{proplists:get_value(k, Node), proplists:get_value(v, Node)}
 `;
 key <- atom ~;
 value <- string / object / null ~;
@@ -321,7 +320,7 @@ null <- "null" `
 null
 `;
 string <- '"' str:[^"]* '"' `
-{string, list_to_binary(proplists:get_value(str, Node))}
+\{string, list_to_binary(proplists:get_value(str, Node))}
 `;
 white <- [ \t\n\s\r]* ~;
 ```
@@ -343,11 +342,11 @@ not_found : null
 
 ```
 90> oson:file("example3.oson").
-{object,[{<<"some_key">>,{string,<<"asda">>}},
-{<<"another_key">>,
-{object,[{<<"inner">>,{string,<<"uf">>}},
-{<<"empty">>,{object,[]}}]}},
-{<<"not_found">>,null}]}
+\{object,[\{<<"some_key">>,\{string,<<"asda">>}},
+\{<<"another_key">>,
+\{object,[\{<<"inner">>,\{string,<<"uf">>}},
+\{<<"empty">>,\{object,[]}}]}},
+\{<<"not_found">>,null}]}
 ```
 
 Perfect.
