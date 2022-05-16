@@ -1,4 +1,764 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mateusz Jarzyna</title><link>https://mateuszjarzyna.github.io/</link><description>Recent content on Mateusz Jarzyna</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 11 Sep 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://mateuszjarzyna.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial</title><link>https://mateuszjarzyna.github.io/posts/erlang-peg/</link><pubDate>Mon, 11 Sep 2017 00:00:00 +0000</pubDate><guid>https://mateuszjarzyna.github.io/posts/erlang-peg/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mateusz Jarzyna</title><link>https://mateuszjarzyna.github.io/</link><description>Recent content on Mateusz Jarzyna</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 30 Mar 2020 15:00:00 +0000</lastBuildDate><atom:link href="https://mateuszjarzyna.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Build your own HTTP server in Java in less than one hour (only GET method)</title><link>https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/</link><pubDate>Mon, 30 Mar 2020 15:00:00 +0000</pubDate><guid>https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/</guid><description>
+&lt;img src="https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/cover.png"/>
+&lt;p>Post was originally posted on &lt;a href="https://dev.to/mateuszjarzyna/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method-2k02">my old dev.to blog&lt;/a>&lt;/p>
+&lt;h2 id="one-of-the-most-frequency-used-protocol-in-the-whole-internet-">
+One of the most frequency used protocol in the whole Internet *
+&lt;a href="#one-of-the-most-frequency-used-protocol-in-the-whole-internet-" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;strong>* In OSI model, layer 7&lt;/strong>&lt;/p>
+&lt;p>Every time you visit a website your web browser uses the HTTP protocol to communicate with web server and fetch the page&amp;rsquo;s content. Also, when you are implementing backend app and you have to communicate with other backend app - 80% (or more) of cases you will use the HTTP.&lt;/p>
+&lt;p>Long story short - when you want to be a good software developer, you have to know how the HTTP protocol works. And wiring the HTTP server is pretty good way to understood, I think.
+What a web browser sends to the web server?&lt;/p>
+&lt;p>Good question. Of course, you can use &amp;ldquo;developer tools&amp;rdquo;, let&amp;rsquo;s do it.&lt;/p>
+&lt;h2 id="what-a-web-browser-sends-to-the-web-server">
+What a web browser sends to the web server?
+&lt;a href="#what-a-web-browser-sends-to-the-web-server" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Good question. Of course, you can use &amp;ldquo;developer tools&amp;rdquo;, let&amp;rsquo;s do it.&lt;/p>
+&lt;img src="images/developer-tools.png" alt="Developer tools" class="center" style="border-radius: 8px;" />
+&lt;p>Hmm&amp;hellip; but what now? What exactly it means? We can see some URL, some method, some status, version (huh?), headers, and other stuff. Useful? Yes, but only to analyze the web app, when something is wrong. We still don&amp;rsquo;t know how HTTP works.&lt;/p>
+&lt;h3 id="wireshark-my-old-friend">
+Wireshark, my old friend
+&lt;a href="#wireshark-my-old-friend" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>The source of truth. Wireshark is application to analyze network traffic. You can use it to see each packet that is sent by your (or to your) PC.&lt;/p>
+&lt;img src="images/wireshark.png" alt="Wireshark" class="center" style="border-radius: 8px;" />
+&lt;p>But to be honest - if you know how to use Wireshark - you probably know how HTTP and TCP works. It&amp;rsquo;s pretty advanced program.&lt;/p>
+&lt;h3 id="you-are-right---the-specification">
+You are right - the specification
+&lt;a href="#you-are-right---the-specification" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Every good (I mean - used by more that 5 peoples) protocols should have specification. In this case it&amp;rsquo;s called &lt;a href="https://en.wikipedia.org/wiki/Request_for_Comments">RFC&lt;/a>. But don&amp;rsquo;t lie - you will never read this, it&amp;rsquo;s too long - &lt;a href="https://tools.ietf.org/html/rfc2616">https://tools.ietf.org/html/rfc2616&lt;/a> .&lt;/p>
+&lt;h3 id="just-run-the-server-and-test">
+Just run the server and test
+&lt;a href="#just-run-the-server-and-test" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Joke? No. Probably you have installed on your PC very powerful tool called netcat, it&amp;rsquo;s pretty advanced tool.
+One of the netcat features is TCP server. You can run the netcat to listen on specific port and print every thing what it gets. Netcat is a command line app.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>nc -v -l -p &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Netcat (&lt;code>nc&lt;/code>), please, listen (&lt;code>-l&lt;/code>) on port &lt;code>8080&lt;/code> (&lt;code>-p 8080&lt;/code>) and print everything (&lt;code>-v&lt;/code>).&lt;/p>
+&lt;p>Now open web browser and enter &lt;code>http://localhost:8080/&lt;/code>. Your browser will send the HTTP request to the server runned by netcat. Of course &lt;code>nc&lt;/code> will print the whole request and ignore it, browser will wait for the response (will timeout soon). To kill &lt;code>nc&lt;/code> press &lt;code>ctrl+c&lt;/code>.&lt;/p>
+&lt;p>&lt;a href="https://asciinema.org/a/313443">&lt;img src="https://asciinema.org/a/313443.svg" alt="asciicast">&lt;/a>&lt;/p>
+&lt;p>So, finally, we have an HTTP request!&lt;/p>
+&lt;pre tabindex="0">&lt;code>GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cookie: JSESSIONID=D3AF43EBFC0C9D92AD9C37823C4BB299
+Upgrade-Insecure-Requests: 1
+&lt;/code>&lt;/pre>&lt;p>As you can see - it fully texts protocol. No bits to analyze, just plain text.&lt;/p>
+&lt;h2 id="http-request">
+HTTP request
+&lt;a href="#http-request" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>It may be a little confusing. Maybe &lt;code>nc&lt;/code> parses the request before printing? HTTP protocol should be complicated, where is the sequence of 0 and 1? There aren&amp;rsquo;t any. HTTP is really very simple text protocol. There is only one, little trap (I will explain it at the end of this section).&lt;/p>
+&lt;p>We can split the request to the 4 main parts:&lt;/p>
+&lt;pre tabindex="0">&lt;code>GET / HTTP/1.1
+&lt;/code>&lt;/pre>&lt;p>This is the &lt;em>main&lt;/em> request.&lt;/p>
+&lt;p>&lt;code>GET&lt;/code> - this is the HTTP method. Probably you know &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">there are a lot of methods&lt;/a>.
+&lt;code>GET&lt;/code> means &lt;code>give me&lt;/code>&lt;/p>
+&lt;p>&lt;code>/&lt;/code> - resource. &lt;code>/&lt;/code> means &lt;em>default one&lt;/em>.
+When you will open &lt;code>localhost:8080/my_gf_nudes.html&lt;/code>, the resource will be &lt;code>/my_gf_nudes.html&lt;/code>&lt;/p>
+&lt;p>&lt;code>HTTP/1.1&lt;/code> - HTTP version. There are few versions, 1.1 is commonly used.&lt;/p>
+&lt;pre tabindex="0">&lt;code>Host: localhost:8080
+&lt;/code>&lt;/pre>&lt;p>Host. One server can host many domains, using this field, the browser says which domain it wants exactly&lt;/p>
+&lt;pre tabindex="0">&lt;code>User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cookie: JSESSIONID=D3AF43EBFC0C9D92AD9C37823C4BB299
+Upgrade-Insecure-Requests: 1
+&lt;/code>&lt;/pre>&lt;p>Headers. In short: some additional informations. But I&amp;rsquo;m sure that you know what headers are :)&lt;/p>
+&lt;pre tabindex="0">&lt;code>&lt;/code>&lt;/pre>&lt;p>Surprise - empty line. It means: end of the request. In general - empty line in HTTP means end of section.&lt;/p>
+&lt;h3 id="the-trap">
+The trap
+&lt;a href="#the-trap" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>In HTTP every new line separator is a Window&amp;rsquo;s new line. &lt;code>\r\n&lt;/code> not &lt;code>\n&lt;/code>. Remember.&lt;/p>
+&lt;h3 id="response">
+Response
+&lt;a href="#response" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Ok. We have a request. How does response look like? Send a request to any server and see, there is nothing simpler.
+On your laptop you can find another very useful tool - telnet. Using &lt;code>telenet&lt;/code> you can open TCP connection, write something to server and print the response.
+Try to do it yourself. Run &lt;code>telnet google.com 80&lt;/code> (80 is the default HTTP port) and type request manually (you know how it should look like). To close connection press &lt;code>ctrl+]&lt;/code> then type &lt;code>quit&lt;/code>.&lt;/p>
+&lt;p>&lt;a href="https://asciinema.org/a/313466">&lt;img src="https://asciinema.org/a/313466.svg" alt="asciicast">&lt;/a>&lt;/p>
+&lt;p>OK. We have a response.&lt;/p>
+&lt;pre tabindex="0">&lt;code>HTTP/1.1 301 Moved Permanently
+Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Wed, 25 Mar 2020 18:53:12 GMT
+Expires: Fri, 24 Apr 2020 18:53:12 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+&amp;lt;HTML&amp;gt;&amp;lt;HEAD&amp;gt;&amp;lt;meta http-equiv=&amp;#34;content-type&amp;#34; content=&amp;#34;text/html;charset=utf-8&amp;#34;&amp;gt;
+&amp;lt;TITLE&amp;gt;301 Moved&amp;lt;/TITLE&amp;gt;&amp;lt;/HEAD&amp;gt;&amp;lt;BODY&amp;gt;
+&amp;lt;H1&amp;gt;301 Moved&amp;lt;/H1&amp;gt;
+The document has moved
+&amp;lt;A HREF=&amp;#34;http://www.google.com/&amp;#34;&amp;gt;here&amp;lt;/A&amp;gt;.
+&amp;lt;/BODY&amp;gt;&amp;lt;/HTML&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>We can split it to 4 sections&lt;/p>
+&lt;pre tabindex="0">&lt;code>HTTP/1.1 301 Moved Permanently
+&lt;/code>&lt;/pre>&lt;p>&lt;code>HTTP/1.1&lt;/code> - version
+&lt;code>301&lt;/code> - &lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">status code&lt;/a>. I believe you are familiar with that
+&lt;code>Moved Permanently&lt;/code> - human-readable status code&lt;/p>
+&lt;pre tabindex="0">&lt;code>Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Wed, 25 Mar 2020 18:53:12 GMT
+Expires: Fri, 24 Apr 2020 18:53:12 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+&lt;/code>&lt;/pre>&lt;p>Headers&lt;/p>
+&lt;pre tabindex="0">&lt;code>&lt;/code>&lt;/pre>&lt;p>Empty line, it means that the content will be sent in next section.&lt;/p>
+&lt;pre tabindex="0">&lt;code>&amp;lt;HTML&amp;gt;&amp;lt;HEAD&amp;gt;&amp;lt;meta http-equiv=&amp;#34;content-type&amp;#34; content=&amp;#34;text/html;charset=utf-8&amp;#34;&amp;gt;
+&amp;lt;TITLE&amp;gt;301 Moved&amp;lt;/TITLE&amp;gt;&amp;lt;/HEAD&amp;gt;&amp;lt;BODY&amp;gt;
+&amp;lt;H1&amp;gt;301 Moved&amp;lt;/H1&amp;gt;
+The document has moved
+&amp;lt;A HREF=&amp;#34;http://www.google.com/&amp;#34;&amp;gt;here&amp;lt;/A&amp;gt;.
+&amp;lt;/BODY&amp;gt;&amp;lt;/HTML&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Content, HTML or binary or something&lt;/p>
+&lt;pre tabindex="0">&lt;code>&lt;/code>&lt;/pre>&lt;p>Empty line, means end of request.&lt;/p>
+&lt;p>&lt;strong>REMEMBER: each new line is &lt;code>\r\n&lt;/code>&lt;/strong>&lt;/p>
+&lt;h2 id="time-for-programming">
+Time for programming!
+&lt;a href="#time-for-programming" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>We know how request look like, we know how response look like, it&amp;rsquo;s time to implement our server.&lt;/p>
+&lt;h3 id="what-we-expect">
+What we expect
+&lt;a href="#what-we-expect" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>We want to get a very simple thing - to display an HTML page and a picture in a browser.
+Let&amp;rsquo;s prepare two HTMLs files and one picture&lt;/p>
+&lt;pre tabindex="0">&lt;code>❯ pwd
+/tmp/www
+❯ ls
+gallery.html index.html me.jpg
+❯ cat index.html
+&amp;lt;html&amp;gt;
+&amp;lt;header&amp;gt;
+&amp;lt;title&amp;gt;My homepage!&amp;lt;/title&amp;gt;
+&amp;lt;/header&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;h1&amp;gt;Welcome!&amp;lt;/h1&amp;gt;
+&amp;lt;p&amp;gt;&amp;lt;a href=&amp;#34;gallery.html&amp;#34;&amp;gt;Here&amp;lt;/a&amp;gt; you can look at my pictures&amp;lt;/p&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+❯ cat gallery.html
+&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+&amp;lt;title&amp;gt;Gallery&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;h1&amp;gt;My sexi photos&amp;lt;h1&amp;gt;
+&amp;lt;img src=&amp;#34;me.jpg&amp;#34; /&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code>&lt;/pre>&lt;h3 id="the-plan">
+The plan
+&lt;a href="#the-plan" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Plan is very simple:&lt;/p>
+&lt;ol start="0">
+&lt;li>Open TCP socket and listen&lt;/li>
+&lt;li>Accept the client and read request&lt;/li>
+&lt;li>Parse the request&lt;/li>
+&lt;li>Find requested resource on disk&lt;/li>
+&lt;li>Send the response&lt;/li>
+&lt;li>Test&lt;/li>
+&lt;/ol>
+&lt;h3 id="open-tcp-socket">
+Open TCP socket
+&lt;a href="#open-tcp-socket" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>In this article we will use &lt;code>ServerSocket&lt;/code> class to handle TCP connection. As a homework you can reimplement the server to use the classes from the &lt;code>nio&lt;/code> packages.&lt;/p>
+&lt;p>So, open your IDE and let&amp;rsquo;s start.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span> String&lt;span style="color:#f92672">[]&lt;/span> args &lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">(&lt;/span>ServerSocket serverSocket &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ServerSocket&lt;span style="color:#f92672">(&lt;/span>8080&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// implement client handler here
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>I want to keep the code concise and clean - it&amp;rsquo;s why I &lt;code>throws Exception&lt;/code> instead of implementing good exception handling.
+So as I told, we have to open socket on port 8080 (why not 80? Because to use low port you need root privileges).
+We also need the infinity loop to &amp;lsquo;pause the server&amp;rsquo;.&lt;/p>
+&lt;p>Use &lt;code>telnet&lt;/code> to test the socket:&lt;/p>
+&lt;img src="images/wireshark.png" alt="Wireshark" class="center" style="border-radius: 8px;" />
+&lt;p>Perfect, works.&lt;/p>
+&lt;h3 id="accept-client-connection">
+Accept client connection
+&lt;a href="#accept-client-connection" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">(&lt;/span>ServerSocket serverSocket &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ServerSocket&lt;span style="color:#f92672">(&lt;/span>8080&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Socket client &lt;span style="color:#f92672">=&lt;/span> serverSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">accept&lt;/span>&lt;span style="color:#f92672">())&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> handleClient&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>To accept connection from client we have to call &lt;strong>blocking&lt;/strong> &lt;code>accept()&lt;/code> method. Java program will wait for a client on that line.&lt;/p>
+&lt;p>Time to implement the client handler:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">handleClient&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Socket client&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Debug: got new client &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> BufferedReader br &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> BufferedReader&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> InputStreamReader&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getInputStream&lt;/span>&lt;span style="color:#f92672">()));&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> StringBuilder requestBuilder &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> StringBuilder&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String line&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#f92672">(!(&lt;/span>line &lt;span style="color:#f92672">=&lt;/span> br&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">readLine&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">isBlank&lt;/span>&lt;span style="color:#f92672">())&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> requestBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">append&lt;/span>&lt;span style="color:#f92672">(&lt;/span>line &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String request &lt;span style="color:#f92672">=&lt;/span> requestBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>request&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We have to read the request. How? Just read the input stream from the client&amp;rsquo;s socket. In Java it&amp;rsquo;s not so simple, that&amp;rsquo;s why I made this ugly line&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">new&lt;/span> BufferedReader&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> InputStreamReader&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getInputStream&lt;/span>&lt;span style="color:#f92672">()));&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Well, Java.&lt;/p>
+&lt;p>Request ends with one empty line (&lt;code>\r\n&lt;/code>), remember? Client will send empty line, but imputStream will be still open, we have to read it until one, empty line arrives.&lt;/p>
+&lt;p>Run the server, go to &lt;code>http://localhost:8080/&lt;/code> and observe logs:&lt;/p>
+&lt;img src="images/logs.png" alt="Logs" class="center" style="border-radius: 8px;" />
+&lt;p>It works! We can log the whole request!&lt;/p>
+&lt;h3 id="parse-the-request">
+Parse the request
+&lt;a href="#parse-the-request" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Parsing the request is realy simple, I don&amp;rsquo;t think there&amp;rsquo;s any need for further explanation&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> String request &lt;span style="color:#f92672">=&lt;/span> requestBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String&lt;span style="color:#f92672">[]&lt;/span> requestsLines &lt;span style="color:#f92672">=&lt;/span> request&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">split&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String&lt;span style="color:#f92672">[]&lt;/span> requestLine &lt;span style="color:#f92672">=&lt;/span> requestsLines&lt;span style="color:#f92672">[&lt;/span>0&lt;span style="color:#f92672">].&lt;/span>&lt;span style="color:#a6e22e">split&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34; &amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String method &lt;span style="color:#f92672">=&lt;/span> requestLine&lt;span style="color:#f92672">[&lt;/span>0&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String path &lt;span style="color:#f92672">=&lt;/span> requestLine&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String version &lt;span style="color:#f92672">=&lt;/span> requestLine&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String host &lt;span style="color:#f92672">=&lt;/span> requestsLines&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">].&lt;/span>&lt;span style="color:#a6e22e">split&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34; &amp;#34;&lt;/span>&lt;span style="color:#f92672">)[&lt;/span>1&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> List&lt;span style="color:#f92672">&amp;lt;&lt;/span>String&lt;span style="color:#f92672">&amp;gt;&lt;/span> headers &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ArrayList&lt;span style="color:#f92672">&amp;lt;&amp;gt;();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> h &lt;span style="color:#f92672">=&lt;/span> 2&lt;span style="color:#f92672">;&lt;/span> h &lt;span style="color:#f92672">&amp;lt;&lt;/span> requestsLines&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">length&lt;/span>&lt;span style="color:#f92672">;&lt;/span> h&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String header &lt;span style="color:#f92672">=&lt;/span> requestsLines&lt;span style="color:#f92672">[&lt;/span>h&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">add&lt;/span>&lt;span style="color:#f92672">(&lt;/span>header&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String accessLog &lt;span style="color:#f92672">=&lt;/span> String&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">format&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Client %s, method %s, path %s, version %s, host %s, headers %s&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">(),&lt;/span> method&lt;span style="color:#f92672">,&lt;/span> path&lt;span style="color:#f92672">,&lt;/span> version&lt;span style="color:#f92672">,&lt;/span> host&lt;span style="color:#f92672">,&lt;/span> headers&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>accessLog&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Just some splits. The only one thing that you may not understand is why we started the loop from 2? Because first line (index 0) is &lt;code>GET / HTTP/1.1&lt;/code>, second line is host. The headers start with the third line of the request&lt;/p>
+&lt;h3 id="send-response">
+Send response
+&lt;a href="#send-response" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>We will send the response to the client&amp;rsquo;s output stream.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> OutputStream clientOutput &lt;span style="color:#f92672">=&lt;/span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getOutputStream&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;HTTP/1.1 200 OK\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">((&lt;/span>&lt;span style="color:#e6db74">&amp;#34;ContentType: text/html\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;b&amp;gt;It works!&amp;lt;/b&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\r\n\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">flush&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Do you remember how response should look like?&lt;/p>
+&lt;pre tabindex="0">&lt;code>version status code
+headers
+(empty line)
+content
+(empty line)
+&lt;/code>&lt;/pre>&lt;p>Don&amp;rsquo;t forget to close the output stream.&lt;/p>
+&lt;img src="images/it-works.png" alt="It works!" class="center" style="border-radius: 8px;" />
+&lt;p>Wow, it&amp;rsquo;s really works&lt;/p>
+&lt;h3 id="find-requested-resource">
+Find requested resource
+&lt;a href="#find-requested-resource" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>We have to implement two methods first&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> String &lt;span style="color:#a6e22e">guessContentType&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Path filePath&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> Files&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">probeContentType&lt;/span>&lt;span style="color:#f92672">(&lt;/span>filePath&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Path &lt;span style="color:#a6e22e">getFilePath&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String path&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">equals&lt;/span>&lt;span style="color:#f92672">(&lt;/span>path&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/index.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> Paths&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/tmp/www&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> path&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>guessContentType&lt;/code> - we have to tell to the browser what kind of content we are sending. It&amp;rsquo;s callend &lt;code>content type&lt;/code>. Fortunately, there are built-in mechanisms in Java for this. We don&amp;rsquo;t have to make a big switch block.&lt;/p>
+&lt;p>&lt;code>getFilePath&lt;/code> - Before we will return the file - we need to known it location.
+This condition deserves attention&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">equals&lt;/span>&lt;span style="color:#f92672">(&lt;/span>path&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/index.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If user wants default resource then return &lt;code>index.html&lt;/code>.&lt;/p>
+&lt;h3 id="send-the-response">
+Send the response
+&lt;a href="#send-the-response" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>Do you remember the code that sends response to the user (block of clientOutput.write)? We need to move it to the method&lt;/p>
+&lt;pre>&lt;code>private static void sendResponse(Socket client, String status, String contentType, byte[] content) throws IOException {
+OutputStream clientOutput = client.getOutputStream();
+clientOutput.write((&amp;quot;HTTP/1.1 \r\n&amp;quot; + status).getBytes());
+clientOutput.write((&amp;quot;ContentType: &amp;quot; + contentType + &amp;quot;\r\n&amp;quot;).getBytes());
+clientOutput.write(&amp;quot;\r\n&amp;quot;.getBytes());
+clientOutput.write(content);
+clientOutput.write(&amp;quot;\r\n\r\n&amp;quot;.getBytes());
+clientOutput.flush();
+client.close();
+}
+&lt;/code>&lt;/pre>
+&lt;p>Ok, finally we can return the file&lt;/p>
+&lt;pre>&lt;code> Path filePath = getFilePath(path);
+if (Files.exists(filePath)) {
+// file exist
+String contentType = guessContentType(filePath);
+sendResponse(client, &amp;quot;200 OK&amp;quot;, contentType, Files.readAllBytes(filePath));
+} else {
+// 404
+byte[] notFoundContent = &amp;quot;&amp;lt;h1&amp;gt;Not found :(&amp;lt;/h1&amp;gt;&amp;quot;.getBytes();
+sendResponse(client, &amp;quot;404 Not Found&amp;quot;, &amp;quot;text/html&amp;quot;, notFoundContent);
+}
+&lt;/code>&lt;/pre>
+&lt;p>It works!&lt;/p>
+&lt;img src="images/it-works-2.png" alt="It works!" class="center" style="border-radius: 8px;" />
+&lt;p>Finally, we can see html page served by our web server!&lt;/p>
+&lt;h2 id="homework">
+Homework
+&lt;a href="#homework" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;ol start="0">
+&lt;li>Make it multi-thread.
+&lt;ol>
+&lt;li>Create thread pool&lt;/li>
+&lt;li>Move handleClient method to separated class and run it in new thread&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>Rewrite it using non-blocking IO&lt;/li>
+&lt;li>Implement POST method
+&lt;ol>
+&lt;li>Start netcat&lt;/li>
+&lt;li>Send some HTML form&lt;/li>
+&lt;li>Analyze request&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="full-source-code">
+Full source code
+&lt;a href="#full-source-code" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.io.*&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.net.ServerSocket&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.net.Socket&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.nio.file.Files&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.nio.file.Path&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.nio.file.Paths&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.util.ArrayList&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> java.util.List&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Read the full article https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Server&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span> String&lt;span style="color:#f92672">[]&lt;/span> args &lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">(&lt;/span>ServerSocket serverSocket &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ServerSocket&lt;span style="color:#f92672">(&lt;/span>8080&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Socket client &lt;span style="color:#f92672">=&lt;/span> serverSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">accept&lt;/span>&lt;span style="color:#f92672">())&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> handleClient&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">handleClient&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Socket client&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> BufferedReader br &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> BufferedReader&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> InputStreamReader&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getInputStream&lt;/span>&lt;span style="color:#f92672">()));&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> StringBuilder requestBuilder &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> StringBuilder&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String line&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#f92672">(!(&lt;/span>line &lt;span style="color:#f92672">=&lt;/span> br&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">readLine&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">isBlank&lt;/span>&lt;span style="color:#f92672">())&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> requestBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">append&lt;/span>&lt;span style="color:#f92672">(&lt;/span>line &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String request &lt;span style="color:#f92672">=&lt;/span> requestBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String&lt;span style="color:#f92672">[]&lt;/span> requestsLines &lt;span style="color:#f92672">=&lt;/span> request&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">split&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String&lt;span style="color:#f92672">[]&lt;/span> requestLine &lt;span style="color:#f92672">=&lt;/span> requestsLines&lt;span style="color:#f92672">[&lt;/span>0&lt;span style="color:#f92672">].&lt;/span>&lt;span style="color:#a6e22e">split&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34; &amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String method &lt;span style="color:#f92672">=&lt;/span> requestLine&lt;span style="color:#f92672">[&lt;/span>0&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String path &lt;span style="color:#f92672">=&lt;/span> requestLine&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String version &lt;span style="color:#f92672">=&lt;/span> requestLine&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String host &lt;span style="color:#f92672">=&lt;/span> requestsLines&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">].&lt;/span>&lt;span style="color:#a6e22e">split&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34; &amp;#34;&lt;/span>&lt;span style="color:#f92672">)[&lt;/span>1&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> List&lt;span style="color:#f92672">&amp;lt;&lt;/span>String&lt;span style="color:#f92672">&amp;gt;&lt;/span> headers &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ArrayList&lt;span style="color:#f92672">&amp;lt;&amp;gt;();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> h &lt;span style="color:#f92672">=&lt;/span> 2&lt;span style="color:#f92672">;&lt;/span> h &lt;span style="color:#f92672">&amp;lt;&lt;/span> requestsLines&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">length&lt;/span>&lt;span style="color:#f92672">;&lt;/span> h&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String header &lt;span style="color:#f92672">=&lt;/span> requestsLines&lt;span style="color:#f92672">[&lt;/span>h&lt;span style="color:#f92672">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">add&lt;/span>&lt;span style="color:#f92672">(&lt;/span>header&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String accessLog &lt;span style="color:#f92672">=&lt;/span> String&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">format&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Client %s, method %s, path %s, version %s, host %s, headers %s&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">(),&lt;/span> method&lt;span style="color:#f92672">,&lt;/span> path&lt;span style="color:#f92672">,&lt;/span> version&lt;span style="color:#f92672">,&lt;/span> host&lt;span style="color:#f92672">,&lt;/span> headers&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>accessLog&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Path filePath &lt;span style="color:#f92672">=&lt;/span> getFilePath&lt;span style="color:#f92672">(&lt;/span>path&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Files&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">(&lt;/span>filePath&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// file exist
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> String contentType &lt;span style="color:#f92672">=&lt;/span> guessContentType&lt;span style="color:#f92672">(&lt;/span>filePath&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sendResponse&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;200 OK&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> contentType&lt;span style="color:#f92672">,&lt;/span> Files&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">readAllBytes&lt;/span>&lt;span style="color:#f92672">(&lt;/span>filePath&lt;span style="color:#f92672">));&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 404
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> notFoundContent &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;lt;h1&amp;gt;Not found :(&amp;lt;/h1&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sendResponse&lt;span style="color:#f92672">(&lt;/span>client&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;404 Not Found&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;text/html&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> notFoundContent&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">sendResponse&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Socket client&lt;span style="color:#f92672">,&lt;/span> String status&lt;span style="color:#f92672">,&lt;/span> String contentType&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> content&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> OutputStream clientOutput &lt;span style="color:#f92672">=&lt;/span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getOutputStream&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">((&lt;/span>&lt;span style="color:#e6db74">&amp;#34;HTTP/1.1 \r\n&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> status&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">((&lt;/span>&lt;span style="color:#e6db74">&amp;#34;ContentType: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> contentType &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>content&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">write&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\r\n\r\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> clientOutput&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">flush&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> client&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Path &lt;span style="color:#a6e22e">getFilePath&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String path&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">equals&lt;/span>&lt;span style="color:#f92672">(&lt;/span>path&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/index.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> Paths&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/tmp/www&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> path&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> String &lt;span style="color:#a6e22e">guessContentType&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Path filePath&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> Files&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">probeContentType&lt;/span>&lt;span style="color:#f92672">(&lt;/span>filePath&lt;span style="color:#f92672">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MAKERbuino - solder your own game console and start making games</title><link>https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/</link><pubDate>Mon, 30 Mar 2020 15:00:00 +0000</pubDate><guid>https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/</guid><description>
+&lt;img src="https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/cover.jpg"/>
+&lt;p>Post was originally posted on &lt;a href="https://dev.to/mateuszjarzyna/makerbuino-solder-your-own-game-console-and-start-making-games-5f0p">my old dev.to blog&lt;/a>&lt;/p>
+&lt;p>I&amp;rsquo;ve been the software developer for several years now. But in this profession there was still an area in which I have exactly 0 experience - gamedev. I know I can watch tutorials about the Unity and build 3d games in two weeks. But to tell you the truth - it&amp;rsquo;s not what I like. I like to know how it &lt;em>exactly&lt;/em> works, not only how to use the framework.
+Modern games engines are really, really too complicated to understand them. Even games from &amp;lsquo;90 are too complicated for me - especially when I have no experience in game development, and also too little in C language.
+So I decided to start with the basic. How the games works on yours old, two-color phone? Simple gameplay, low graphic, poor hardware - I think it&amp;rsquo;s the good point to start the journey.&lt;/p>
+&lt;h2 id="soldering-the-makerbuino">
+Soldering the MAKERbuino
+&lt;a href="#soldering-the-makerbuino" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>There is a toy on the market called &lt;a href="https://www.circuitmess.com/makerbuino/">MAKERbuino&lt;/a>. Actually it&amp;rsquo;s &lt;a href="https://gamebuino.com/gamebuino-classic">Gamebiono Classic&lt;/a> that you can solder by yourself.&lt;/p>
+&lt;img src="images/1.jpeg" alt="The box" class="center" style="border-radius: 8px;" />
+&lt;p>The box contains few resistors, some buttons, one old screen and so on.&lt;/p>
+&lt;img src="images/2.jpeg" alt="All parts" class="center" style="border-radius: 8px;" />
+&lt;p>I&amp;rsquo;m not sure why my console was delivered with connected battery, but well, doesn&amp;rsquo;t matter, it works anyway.
+To be honest - I&amp;rsquo;m really hopeless in soldering. But hey, practice makes perfect!
+So I prepared all the necessary tool&amp;hellip;&lt;/p>
+&lt;img src="images/3.jpeg" alt="Tools" class="center" style="border-radius: 8px;" />
+&lt;p>&amp;hellip; and I started soldering&lt;/p>
+&lt;img src="images/4.jpeg" alt="Soldering" class="center" style="border-radius: 8px;" />
+&lt;p>I&amp;rsquo;m such a noob I didn&amp;rsquo;t realize I was soldering with the battery connected!
+The &lt;a href="https://www.circuitmess.com/makerbuino-build-guide/">official guide&lt;/a> is really user-friendly. It says that it should take 5 hours, I&amp;rsquo;ve done it in 4.&lt;/p>
+&lt;img src="images/5.jpeg" alt="Soldered motherboard" class="center" style="border-radius: 8px;" />
+&lt;p>Not perfect, not terrible. The most important thing is that it works.
+Four hours and one liter of water later finally I&amp;rsquo;ve soldered the console.&lt;/p>
+&lt;img src="images/6.jpeg" alt="Assembled console" class="center" style="border-radius: 8px;" />
+&lt;img src="images/7.jpeg" alt="Assembled console" class="center" style="border-radius: 8px;" />
+&lt;p>ound works, screen brightness works, old Nokia&amp;rsquo;s screen works (and can display exactly one color, it&amp;rsquo;s weird nowadays) works. The MAKERbuino comes with SD card (128 MB :), inside there were few build-in games.&lt;/p>
+&lt;img src="images/8.gif" alt="Build-in game" class="center" style="border-radius: 8px;" />
+&lt;p>WOW, everything works, I&amp;rsquo;m so proud of myself.
+There is only one big shortcoming - the &amp;ldquo;click&amp;rdquo; sound, it is sooo loud&amp;hellip;&lt;/p>
+&lt;h2 id="im-game-developer">
+I&amp;rsquo;m game developer!
+&lt;a href="#im-game-developer" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>ATmega328p-pu - 2kB of RAM and an 8-bit CPU at 16MHz. I&amp;rsquo;ve programmed few times on so poor computer (for example I made a 3d printed fish feeder with Adruino), but sill - nowadays it&amp;rsquo;s a little challenge, I can&amp;rsquo;t use a dozen of frameworks. Also, I have to use skills sightly forgotten by modern programmers - optimization.
+MAKERbuino is built on Arduino, so I had to configure my Arduino IDE. Fortunately &lt;a href="https://www.circuitmess.com/coding-getting-started/">official guide&lt;/a> explains very well how to do it. Arduino IDE is not as good as Intellij Idea for example, it&amp;rsquo;s very poor to be honest. But to create 100 lines of code it&amp;rsquo;s good enough.&lt;/p>
+&lt;p>So, how to create a game? I don&amp;rsquo;t know. There is no tutorial, no API. But MAKERbuino is after all Gamebuino Classic. So I used the Gamebuino tutorials. Official &lt;a href="https://gamebuino.com/academy">Gabebuino Academy&lt;/a> is nice place to start. But it uses the new Gamebuino - with colorful screen and little different API - so I had to forgot about coping-and-pasting. I read those tutorials to understand the process and start thinking like a game developer. I&amp;rsquo;ve also had to use &lt;a href="http://legacy.gamebuino.com/wiki/index.php?title=Reference">old reference&lt;/a> to write the code.&lt;/p>
+&lt;h2 id="bouncing-ball">
+Bouncing ball
+&lt;a href="#bouncing-ball" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Uploading the game to the console is not the fastest process in the world. And that loud sound of clicking. Fortunately there is an &lt;a href="http://simbuino4web.ppl-pilot.com/">online emulator&lt;/a>.
+One hour after reading the Academy I&amp;rsquo;ve made bouncing ball&lt;/p>
+&lt;img src="images/9.gif" alt="Emulator" class="center" style="border-radius: 8px;" />
+&lt;p>I have no idea what is that weird sign in right-top corner, doesn&amp;rsquo;t matter. The ball is bouncing!&lt;/p>
+&lt;p>Full source code:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;Gamebuino.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Gamebuino gb;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballX &lt;span style="color:#f92672">=&lt;/span> LCDWIDTH &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballY &lt;span style="color:#f92672">=&lt;/span> LCDHEIGHT &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">setup&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.begin();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.titleScreen(&lt;span style="color:#e6db74">&amp;#34;bouncing ball&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">loop&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span>(&lt;span style="color:#f92672">!&lt;/span>gb.update());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.clear();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (ballX &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (ballX &lt;span style="color:#f92672">==&lt;/span> LCDWIDTH &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (ballY &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (ballY &lt;span style="color:#f92672">==&lt;/span> LCDHEIGHT &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballX &lt;span style="color:#f92672">+=&lt;/span> ballSpeedX;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballY &lt;span style="color:#f92672">+=&lt;/span> ballSpeedY;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.fillRect(ballX, ballY, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Maybe I can optimize and refactor the code, but hey, it&amp;rsquo;s my first &amp;ldquo;game&amp;rdquo; ever.&lt;/p>
+&lt;h2 id="pong">
+PONG
+&lt;a href="#pong" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>One or two hours later I&amp;rsquo;ve made probably the simplest game ever - the PONG. With &amp;ldquo;Artificial Intelligence&amp;rdquo;! The CPU player is very simple of course&lt;/p>
+&lt;pre tabindex="0">&lt;code>One or two hours later I&amp;#39;ve made probably the simplest game ever - the PONG. With &amp;#34;Artificial Intelligence&amp;#34;! The CPU player is very simple of course
+&lt;/code>&lt;/pre>
+&lt;img src="images/10.gif" alt="Pong" class="center" style="border-radius: 8px;" />
+&lt;p>The ball was much bigger on the emulator.&lt;/p>
+&lt;p>Full source code:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;Gamebuino.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Gamebuino gb;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> ballSize &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> paddleWidth &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> paddleHeight &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">15&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> playerPaddleY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">15&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> playerPaddlePadding &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> cpuPaddleY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">15&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> cpuPaddlePadding &lt;span style="color:#f92672">=&lt;/span> LCDWIDTH &lt;span style="color:#f92672">-&lt;/span> paddleWidth &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> playerScore &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> cpuScore &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">resetBall&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballX &lt;span style="color:#f92672">=&lt;/span> LCDWIDTH &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballY &lt;span style="color:#f92672">=&lt;/span> LCDHEIGHT &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (random(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (random(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">setup&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.begin();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.titleScreen(&lt;span style="color:#e6db74">&amp;#34;super gra&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resetBall();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">loop&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span>(&lt;span style="color:#f92672">!&lt;/span>gb.update());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.clear();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (ballX &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// player lose
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> cpuScore&lt;span style="color:#f92672">++&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resetBall();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (ballX &lt;span style="color:#f92672">==&lt;/span> LCDWIDTH &lt;span style="color:#f92672">-&lt;/span> ballSize) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// cpu lose
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> playerScore&lt;span style="color:#f92672">++&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resetBall();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (ballY &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (ballY &lt;span style="color:#f92672">==&lt;/span> LCDHEIGHT &lt;span style="color:#f92672">-&lt;/span> ballSize) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballSpeedY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (ballX &lt;span style="color:#f92672">==&lt;/span> playerPaddlePadding &lt;span style="color:#f92672">+&lt;/span> paddleWidth
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ballY &lt;span style="color:#f92672">&amp;gt;=&lt;/span> playerPaddleY
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ballY &lt;span style="color:#f92672">&amp;lt;=&lt;/span> playerPaddleY &lt;span style="color:#f92672">+&lt;/span> paddleHeight) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// touch player&amp;#39;s paddle
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (ballX &lt;span style="color:#f92672">==&lt;/span> cpuPaddlePadding &lt;span style="color:#f92672">-&lt;/span> ballSize
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ballY &lt;span style="color:#f92672">&amp;gt;=&lt;/span> cpuPaddleY
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ballY &lt;span style="color:#f92672">&amp;lt;=&lt;/span> cpuPaddleY &lt;span style="color:#f92672">+&lt;/span> paddleHeight) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// touch cpu&amp;#39;s paddle
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> ballSpeedX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballX &lt;span style="color:#f92672">+=&lt;/span> ballSpeedX;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ballY &lt;span style="color:#f92672">+=&lt;/span> ballSpeedY;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.fillRect(ballX, ballY, ballSize, ballSize);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (gb.buttons.repeat(BTN_UP, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> playerPaddleY &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> playerPaddleY &lt;span style="color:#f92672">-=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (gb.buttons.repeat(BTN_DOWN, &lt;span style="color:#ae81ff">0&lt;/span>) &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> playerPaddleY &lt;span style="color:#f92672">&amp;lt;&lt;/span> LCDHEIGHT &lt;span style="color:#f92672">-&lt;/span> paddleHeight) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> playerPaddleY &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">int&lt;/span> cpuPaddleCenter &lt;span style="color:#f92672">=&lt;/span> (cpuPaddleY &lt;span style="color:#f92672">+&lt;/span> paddleHeight) &lt;span style="color:#f92672">/&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (cpuPaddleCenter &lt;span style="color:#f92672">&amp;gt;&lt;/span> ballY &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cpuPaddleY &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cpuPaddleY&lt;span style="color:#f92672">--&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (cpuPaddleCenter &lt;span style="color:#f92672">&amp;lt;&lt;/span> ballY &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> cpuPaddleY &lt;span style="color:#f92672">&amp;lt;&lt;/span> LCDHEIGHT &lt;span style="color:#f92672">-&lt;/span> paddleHeight) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cpuPaddleY&lt;span style="color:#f92672">++&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.fillRect(playerPaddlePadding, playerPaddleY, paddleWidth, paddleHeight);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.fillRect(cpuPaddlePadding, cpuPaddleY, paddleWidth, paddleHeight);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.cursorY &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.cursorX &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.print(playerScore);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.cursorX &lt;span style="color:#f92672">=&lt;/span> LCDWIDTH &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">13&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gb.display.print(cpuScore);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now I see that I should refactor my code. But I&amp;rsquo;m satisfied and so proud of myself.&lt;/p>
+&lt;h2 id="a-lot-of-fun">
+A lot of fun
+&lt;a href="#a-lot-of-fun" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>New experiences are always full of a fun, in this case a lot of fun. Soldering, making game from &amp;lsquo;70 - I had a nice time. Maybe it&amp;rsquo;s not suitable for CV, but it&amp;rsquo;s still a lot of experience.
+If you are a fan of electronic - I can recommend from the bottom of my heart. It&amp;rsquo;s time to finish this post and finish &amp;ldquo;snake&amp;rdquo; game. And later maybe Micro Machines, who knows&amp;hellip;&lt;/p></description></item><item><title>Linux's commands and tricks I'm using in my daily job as a developer</title><link>https://mateuszjarzyna.github.io/posts/linux-s-commands-and-tricks-i-m-using-in-my-daily-job-as-a-developer/</link><pubDate>Mon, 11 Nov 2019 15:00:00 +0000</pubDate><guid>https://mateuszjarzyna.github.io/posts/linux-s-commands-and-tricks-i-m-using-in-my-daily-job-as-a-developer/</guid><description>
+&lt;p>Post was originally posted on &lt;a href="https://dev.to/mateuszjarzyna/linux-s-commands-and-tricks-i-m-using-in-my-daily-job-as-a-developer-4cle">my old dev.to blog&lt;/a>&lt;/p>
+&lt;p>This is not a post from the series of those describing the &lt;code>cd&lt;/code> command. It&amp;rsquo;s just a list of commands and tricks I&amp;rsquo;m using (almost) every day.&lt;/p>
+&lt;h2 id="port-forwarding">
+Port forwarding
+&lt;a href="#port-forwarding" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Sometimes I have to connect to database and of course I prefer to use my GUI manager (JetBrains DataGrip).
+So, if security policy exist in your company and your database&amp;rsquo;s port is not exposed you can execute&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -L&lt;span style="color:#f92672">{&lt;/span>port on your PC&lt;span style="color:#f92672">}&lt;/span>:localhost:&lt;span style="color:#f92672">{&lt;/span>database&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>s port&lt;span style="color:#f92672">}&lt;/span> root@&lt;span style="color:#f92672">{&lt;/span>server IP&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The command below will open port &lt;code>3308&lt;/code> on your laptop and everything will be forwarded to &lt;code>192.168.1.2:3306&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -L3308:localhost:3306 root@192.168.1.2
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>localhost&lt;/code> means that database is listening on &lt;code>192.168.1.2&lt;/code>. You can type for example &lt;code>192.168.3.77&lt;/code> and everything will be forwarded to &lt;code>.3.77&lt;/code> server via &lt;code>.1.2&lt;/code>.&lt;/p>
+&lt;h2 id="edit-file-in-vim-without-sudo-but-save-with-sudo">
+Edit file in VIM without &lt;code>sudo&lt;/code>, but save with &lt;code>sudo&lt;/code>
+&lt;a href="#edit-file-in-vim-without-sudo-but-save-with-sudo" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Have you ever edited some configs file and forgot to &lt;code>sudo&lt;/code>? Me too&amp;hellip; There is a trick to save the file anyway, just type in VIM:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>:w !sudo tee %
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a href="https://stackoverflow.com/a/7078429/1775344">Explanation&lt;/a>&lt;/p>
+&lt;h2 id="go-to-begginingend-of-line-in-terminal">
+Go to beggining/end of line in terminal
+&lt;a href="#go-to-begginingend-of-line-in-terminal" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>If you wrote a very long command in the terminal it may take a long time before you return to the begging of the line to add missing &lt;code>sudo&lt;/code>. And back to the end to add some parameters.
+Press &lt;code>crtl + a&lt;/code> to move to the begging and &lt;code>crtl + e &lt;/code>to the end of the line in terminal.&lt;/p>
+&lt;h2 id="ll">
+ll
+&lt;a href="#ll" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Save few days in a year by typing &lt;code>ll&lt;/code> instead of &lt;code>ls -la&lt;/code>. Works on most Linux servers.&lt;/p>
+&lt;h2 id="execute-command-you-executed-in-the-past">
+Execute command you executed in the past
+&lt;a href="#execute-command-you-executed-in-the-past" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="last-command">
+Last command
+&lt;a href="#last-command" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>To execute last command over again you can of course press ↑ (arrow up) key. But you can also type &lt;code>!!&lt;/code>. So executing last command as a root is very easy&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo !!
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>To run the last command that started with &lt;code>apt&lt;/code> type &lt;code>!apt&lt;/code>&lt;/p>
+&lt;h3 id="search-history">
+Search history
+&lt;a href="#search-history" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h3>
+&lt;p>To find the command that contains &lt;code>/tm&lt;/code>p you have executed in the past press &lt;code>ctrl + r&lt;/code> and type &lt;code>/tmp&lt;/code>. Press &lt;code>ctrl + r&lt;/code> again for next result.
+To show all commands or to search using regular expression use&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>history | grep &lt;span style="color:#e6db74">&amp;#34;/tmp&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="agree-for-everything">
+Agree for everything
+&lt;a href="#agree-for-everything" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>To say yes for each question you can use application called &lt;code>yes&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>yes | yum install curl
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>use &lt;code>yes no&lt;/code> to say no and discard.&lt;/p>
+&lt;blockquote>
+&lt;p>WARNING&lt;/p>
+&lt;p>As @patricnox notices &lt;a href="https://dev.to/patricnox/comment/hidp">in the comment&lt;/a> - using &lt;code>yes&lt;/code> may do unexpected things. You can accidentally install 10 GB of dependencies or other things you don&amp;rsquo;t want to do.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="run-a-long-lasting-process-in-the-background-and-close-the-terminal">
+Run a long-lasting process in the background and close the terminal
+&lt;a href="#run-a-long-lasting-process-in-the-background-and-close-the-terminal" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>If you run a script that will end in 3 days, you don&amp;rsquo;t have to wait with the terminal window open to end. You can run it using &lt;code>nohup&lt;/code> command&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>nohup wget http://large-files.com/10gb-super-movie.avi &amp;amp;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>wget&lt;/code> works in the background, output is saved to &lt;code>nohup.out&lt;/code> file in working directory.&lt;/p>
+&lt;h2 id="checking-who-has-stolen-your-favourite-port">
+Checking who has stolen your favourite port
+&lt;a href="#checking-who-has-stolen-your-favourite-port" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>It&amp;rsquo;s really annoying when you are trying to run nginx but you can&amp;rsquo;t because there is already apache running and port 443 is busy.
+So, how to determinate which process is listening on port 80:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ netstat -tulpn | grep &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>tcp6 &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> :::80 :::* LISTEN 10177/java
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>10177&lt;/code> is a pid you are looking for. Now execute&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ps aux | grep &lt;span style="color:#ae81ff">10177&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>for more details.&lt;/p>
+&lt;h2 id="reading-logs">
+Reading logs
+&lt;a href="#reading-logs" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Everyone knows that &lt;code>less&lt;/code> is a very good way to read a logs files. But you can also read gziped logs without extracting!&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>less /var/log/my-app/my-app.log.2015.12.14.gz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="live-reading">
+Live reading
+&lt;a href="#live-reading" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>tail -f /var/log/my-app/my-app.log | grep ERROR
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The command above will show only new lines that contains &lt;code>ERROR&lt;/code>.&lt;/p>
+&lt;h2 id="sort-process">
+Sort process
+&lt;a href="#sort-process" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>Show top 3 processes sorted by CPU usage&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ps aux --sort&lt;span style="color:#f92672">=&lt;/span>-pcpu | head -n &lt;span style="color:#ae81ff">4&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Show top 3 processes sorted by memory usage&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ps aux --sort&lt;span style="color:#f92672">=&lt;/span>-rss | head -n &lt;span style="color:#ae81ff">4&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="executing-command-every-x-seconds">
+Executing command every X seconds
+&lt;a href="#executing-command-every-x-seconds" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>To print command&amp;rsquo;s output every X seconds you can use &lt;code>watch&lt;/code> command. For example to create clock run&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>watch -n &lt;span style="color:#ae81ff">1&lt;/span> date
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="quiet-mode">
+Quiet mode
+&lt;a href="#quiet-mode" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>A lot of standards commands has quiet or silent mode. Very useful when you are creating some bash script. In most of the cases just add &lt;code>-q&lt;/code> or &lt;code>-s&lt;/code> (read &amp;ndash;help or man or check on StackOverflow)&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>zip -q archive.zip big-file.jpg
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>But sometimes (practically always with in-house scripts) you have to ignore the output (send to &lt;code>/dev/null&lt;/code>)&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>./very-verbose.sh 1&amp;gt;/dev/null
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-log-files-for-scripts-executed-by-crontab">
+Create log files for scripts executed by crontab
+&lt;a href="#create-log-files-for-scripts-executed-by-crontab" class="h-anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> * * 1-5 /opt/scripts/send-report.sh 2&amp;gt;/var/log/scripts/report-error.log
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>So next time when your script will fail you won&amp;rsquo;t lose the reason&lt;/p></description></item><item><title>Create decoder for JSON-like format in Erlang. PEG and Neotoma tutorial</title><link>https://mateuszjarzyna.github.io/posts/erlang-peg/</link><pubDate>Mon, 11 Sep 2017 00:00:00 +0000</pubDate><guid>https://mateuszjarzyna.github.io/posts/erlang-peg/</guid><description>
 &lt;img src="https://mateuszjarzyna.github.io/posts/erlang-peg/cover.png"/>
 &lt;p>First we need to learn something about &lt;a href="https://en.wikipedia.org/wiki/Parsing_expression_grammar">PEG&lt;/a>. In short PEG is standard to describing a language. But it is still only a formal grammar. We need a parser. Huh, very complicated, isn’t it? So what do we need? A parser generator of course! You can use for example &lt;a href="https://github.com/seancribbs/neotoma">Neotoma&lt;/a>, very good, well documented parser generator for PEG grammar. Installation instruction you can find on &lt;a href="https://github.com/seancribbs/neotoma">project GitHub&lt;/a>, but you can also use &lt;a href="https://www.rebar3.org/docs/using-available-plugins#section-neotoma">plugin for Rebar3&lt;/a>.&lt;/p>
 &lt;h2 id="our-simple-object-notation">

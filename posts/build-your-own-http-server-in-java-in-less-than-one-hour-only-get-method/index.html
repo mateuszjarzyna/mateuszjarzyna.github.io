@@ -1,0 +1,302 @@
+<!doctype html><html lang=en><head><title>Build your own HTTP server in Java in less than one hour (only GET method) ::
+Mateusz Jarzyna</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Post was originally posted on my old dev.to blog
+One of the most frequency used protocol in the whole Internet * #  * In OSI model, layer 7
+Every time you visit a website your web browser uses the HTTP protocol to communicate with web server and fetch the page&amp;rsquo;s content. Also, when you are implementing backend app and you have to communicate with other backend app - 80% (or more) of cases you will use the HTTP."><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/><link rel=stylesheet href=https://mateuszjarzyna.github.io/assets/style.css><link rel=stylesheet href=https://mateuszjarzyna.github.io/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://mateuszjarzyna.github.io/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://mateuszjarzyna.github.io/img/favicon.png><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/cover.png"><meta name=twitter:title content="Build your own HTTP server in Java in less than one hour (only GET method)"><meta name=twitter:description content="Every time you visit a website your web browser uses the HTTP protocol to communicate with web server and fetch the page's content. Also, when you are implementing backend app and you have to communicate with other backend app - 80% (or more) of cases you will use the HTTP."><meta property="og:title" content="Build your own HTTP server in Java in less than one hour (only GET method)"><meta property="og:description" content="Every time you visit a website your web browser uses the HTTP protocol to communicate with web server and fetch the page's content. Also, when you are implementing backend app and you have to communicate with other backend app - 80% (or more) of cases you will use the HTTP."><meta property="og:type" content="article"><meta property="og:url" content="https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/"><meta property="og:image" content="https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/cover.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-03-30T15:00:00+00:00"><meta property="article:modified_time" content="2020-03-30T15:00:00+00:00"><meta property="og:site_name" content="Mateusz Jarzyna"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>Mateusz Jarzyna</span>
+<span class=logo__cursor></span></a>
+<span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/about>About</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/about>About</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Build your own HTTP server in Java in less than one hour (only GET method)</h1><div class=post-meta><span class=post-date>2020-03-30</span>
+<span class=post-read-time>— 10 min read</span></div><figure class=post-cover><img src=https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/cover.png alt="Build your own HTTP server in Java in less than one hour (only GET method)"></figure><div class=post-content><h2>Table of Contents</h2><aside class=table-of-contents><nav id=TableOfContents><ul><li><a href=#one-of-the-most-frequency-used-protocol-in-the-whole-internet->One of the most frequency used protocol in the whole Internet *</a></li><li><a href=#what-a-web-browser-sends-to-the-web-server>What a web browser sends to the web server?</a><ul><li><a href=#wireshark-my-old-friend>Wireshark, my old friend</a></li><li><a href=#you-are-right---the-specification>You are right - the specification</a></li><li><a href=#just-run-the-server-and-test>Just run the server and test</a></li></ul></li><li><a href=#http-request>HTTP request</a><ul><li><a href=#the-trap>The trap</a></li><li><a href=#response>Response</a></li></ul></li><li><a href=#time-for-programming>Time for programming!</a><ul><li><a href=#what-we-expect>What we expect</a></li><li><a href=#the-plan>The plan</a></li><li><a href=#open-tcp-socket>Open TCP socket</a></li><li><a href=#accept-client-connection>Accept client connection</a></li><li><a href=#parse-the-request>Parse the request</a></li><li><a href=#send-response>Send response</a></li><li><a href=#find-requested-resource>Find requested resource</a></li><li><a href=#send-the-response>Send the response</a></li></ul></li><li><a href=#homework>Homework</a></li><li><a href=#full-source-code>Full source code</a></li></ul></nav></aside><p>Post was originally posted on <a href=https://dev.to/mateuszjarzyna/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method-2k02>my old dev.to blog</a></p><h2 id=one-of-the-most-frequency-used-protocol-in-the-whole-internet->One of the most frequency used protocol in the whole Internet *
+<a href=#one-of-the-most-frequency-used-protocol-in-the-whole-internet- class=h-anchor aria-hidden=true>#</a></h2><p><strong>* In OSI model, layer 7</strong></p><p>Every time you visit a website your web browser uses the HTTP protocol to communicate with web server and fetch the page&rsquo;s content. Also, when you are implementing backend app and you have to communicate with other backend app - 80% (or more) of cases you will use the HTTP.</p><p>Long story short - when you want to be a good software developer, you have to know how the HTTP protocol works. And wiring the HTTP server is pretty good way to understood, I think.
+What a web browser sends to the web server?</p><p>Good question. Of course, you can use &ldquo;developer tools&rdquo;, let&rsquo;s do it.</p><h2 id=what-a-web-browser-sends-to-the-web-server>What a web browser sends to the web server?
+<a href=#what-a-web-browser-sends-to-the-web-server class=h-anchor aria-hidden=true>#</a></h2><p>Good question. Of course, you can use &ldquo;developer tools&rdquo;, let&rsquo;s do it.</p><img src=images/developer-tools.png alt="Developer tools" class=center style=border-radius:8px><p>Hmm&mldr; but what now? What exactly it means? We can see some URL, some method, some status, version (huh?), headers, and other stuff. Useful? Yes, but only to analyze the web app, when something is wrong. We still don&rsquo;t know how HTTP works.</p><h3 id=wireshark-my-old-friend>Wireshark, my old friend
+<a href=#wireshark-my-old-friend class=h-anchor aria-hidden=true>#</a></h3><p>The source of truth. Wireshark is application to analyze network traffic. You can use it to see each packet that is sent by your (or to your) PC.</p><img src=images/wireshark.png alt=Wireshark class=center style=border-radius:8px><p>But to be honest - if you know how to use Wireshark - you probably know how HTTP and TCP works. It&rsquo;s pretty advanced program.</p><h3 id=you-are-right---the-specification>You are right - the specification
+<a href=#you-are-right---the-specification class=h-anchor aria-hidden=true>#</a></h3><p>Every good (I mean - used by more that 5 peoples) protocols should have specification. In this case it&rsquo;s called <a href=https://en.wikipedia.org/wiki/Request_for_Comments>RFC</a>. But don&rsquo;t lie - you will never read this, it&rsquo;s too long - <a href=https://tools.ietf.org/html/rfc2616>https://tools.ietf.org/html/rfc2616</a> .</p><h3 id=just-run-the-server-and-test>Just run the server and test
+<a href=#just-run-the-server-and-test class=h-anchor aria-hidden=true>#</a></h3><p>Joke? No. Probably you have installed on your PC very powerful tool called netcat, it&rsquo;s pretty advanced tool.
+One of the netcat features is TCP server. You can run the netcat to listen on specific port and print every thing what it gets. Netcat is a command line app.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>nc -v -l -p <span style=color:#ae81ff>8080</span>
+</span></span></code></pre></div><p>Netcat (<code>nc</code>), please, listen (<code>-l</code>) on port <code>8080</code> (<code>-p 8080</code>) and print everything (<code>-v</code>).</p><p>Now open web browser and enter <code>http://localhost:8080/</code>. Your browser will send the HTTP request to the server runned by netcat. Of course <code>nc</code> will print the whole request and ignore it, browser will wait for the response (will timeout soon). To kill <code>nc</code> press <code>ctrl+c</code>.</p><p><a href=https://asciinema.org/a/313443><img src=https://asciinema.org/a/313443.svg alt=asciicast></a></p><p>So, finally, we have an HTTP request!</p><pre tabindex=0><code>GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cookie: JSESSIONID=D3AF43EBFC0C9D92AD9C37823C4BB299
+Upgrade-Insecure-Requests: 1
+</code></pre><p>As you can see - it fully texts protocol. No bits to analyze, just plain text.</p><h2 id=http-request>HTTP request
+<a href=#http-request class=h-anchor aria-hidden=true>#</a></h2><p>It may be a little confusing. Maybe <code>nc</code> parses the request before printing? HTTP protocol should be complicated, where is the sequence of 0 and 1? There aren&rsquo;t any. HTTP is really very simple text protocol. There is only one, little trap (I will explain it at the end of this section).</p><p>We can split the request to the 4 main parts:</p><pre tabindex=0><code>GET / HTTP/1.1
+</code></pre><p>This is the <em>main</em> request.</p><p><code>GET</code> - this is the HTTP method. Probably you know <a href=https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>there are a lot of methods</a>.
+<code>GET</code> means <code>give me</code></p><p><code>/</code> - resource. <code>/</code> means <em>default one</em>.
+When you will open <code>localhost:8080/my_gf_nudes.html</code>, the resource will be <code>/my_gf_nudes.html</code></p><p><code>HTTP/1.1</code> - HTTP version. There are few versions, 1.1 is commonly used.</p><pre tabindex=0><code>Host: localhost:8080
+</code></pre><p>Host. One server can host many domains, using this field, the browser says which domain it wants exactly</p><pre tabindex=0><code>User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cookie: JSESSIONID=D3AF43EBFC0C9D92AD9C37823C4BB299
+Upgrade-Insecure-Requests: 1
+</code></pre><p>Headers. In short: some additional informations. But I&rsquo;m sure that you know what headers are :)</p><pre tabindex=0><code></code></pre><p>Surprise - empty line. It means: end of the request. In general - empty line in HTTP means end of section.</p><h3 id=the-trap>The trap
+<a href=#the-trap class=h-anchor aria-hidden=true>#</a></h3><p>In HTTP every new line separator is a Window&rsquo;s new line. <code>\r\n</code> not <code>\n</code>. Remember.</p><h3 id=response>Response
+<a href=#response class=h-anchor aria-hidden=true>#</a></h3><p>Ok. We have a request. How does response look like? Send a request to any server and see, there is nothing simpler.
+On your laptop you can find another very useful tool - telnet. Using <code>telenet</code> you can open TCP connection, write something to server and print the response.
+Try to do it yourself. Run <code>telnet google.com 80</code> (80 is the default HTTP port) and type request manually (you know how it should look like). To close connection press <code>ctrl+]</code> then type <code>quit</code>.</p><p><a href=https://asciinema.org/a/313466><img src=https://asciinema.org/a/313466.svg alt=asciicast></a></p><p>OK. We have a response.</p><pre tabindex=0><code>HTTP/1.1 301 Moved Permanently
+Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Wed, 25 Mar 2020 18:53:12 GMT
+Expires: Fri, 24 Apr 2020 18:53:12 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+
+&lt;HTML&gt;&lt;HEAD&gt;&lt;meta http-equiv=&#34;content-type&#34; content=&#34;text/html;charset=utf-8&#34;&gt;
+&lt;TITLE&gt;301 Moved&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY&gt;
+&lt;H1&gt;301 Moved&lt;/H1&gt;
+The document has moved
+&lt;A HREF=&#34;http://www.google.com/&#34;&gt;here&lt;/A&gt;.
+&lt;/BODY&gt;&lt;/HTML&gt;
+</code></pre><p>We can split it to 4 sections</p><pre tabindex=0><code>HTTP/1.1 301 Moved Permanently
+</code></pre><p><code>HTTP/1.1</code> - version
+<code>301</code> - <a href=https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>status code</a>. I believe you are familiar with that
+<code>Moved Permanently</code> - human-readable status code</p><pre tabindex=0><code>Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Wed, 25 Mar 2020 18:53:12 GMT
+Expires: Fri, 24 Apr 2020 18:53:12 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+</code></pre><p>Headers</p><pre tabindex=0><code></code></pre><p>Empty line, it means that the content will be sent in next section.</p><pre tabindex=0><code>&lt;HTML&gt;&lt;HEAD&gt;&lt;meta http-equiv=&#34;content-type&#34; content=&#34;text/html;charset=utf-8&#34;&gt;
+&lt;TITLE&gt;301 Moved&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY&gt;
+&lt;H1&gt;301 Moved&lt;/H1&gt;
+The document has moved
+&lt;A HREF=&#34;http://www.google.com/&#34;&gt;here&lt;/A&gt;.
+&lt;/BODY&gt;&lt;/HTML&gt;
+</code></pre><p>Content, HTML or binary or something</p><pre tabindex=0><code></code></pre><p>Empty line, means end of request.</p><p><strong>REMEMBER: each new line is <code>\r\n</code></strong></p><h2 id=time-for-programming>Time for programming!
+<a href=#time-for-programming class=h-anchor aria-hidden=true>#</a></h2><p>We know how request look like, we know how response look like, it&rsquo;s time to implement our server.</p><h3 id=what-we-expect>What we expect
+<a href=#what-we-expect class=h-anchor aria-hidden=true>#</a></h3><p>We want to get a very simple thing - to display an HTML page and a picture in a browser.
+Let&rsquo;s prepare two HTMLs files and one picture</p><pre tabindex=0><code>❯ pwd
+/tmp/www
+
+❯ ls
+gallery.html index.html   me.jpg
+
+❯ cat index.html
+&lt;html&gt;
+  &lt;header&gt;
+    &lt;title&gt;My homepage!&lt;/title&gt;
+  &lt;/header&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;p&gt;&lt;a href=&#34;gallery.html&#34;&gt;Here&lt;/a&gt; you can look at my pictures&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+❯ cat gallery.html
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Gallery&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;My sexi photos&lt;h1&gt;
+    &lt;img src=&#34;me.jpg&#34; /&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3 id=the-plan>The plan
+<a href=#the-plan class=h-anchor aria-hidden=true>#</a></h3><p>Plan is very simple:</p><ol start=0><li>Open TCP socket and listen</li><li>Accept the client and read request</li><li>Parse the request</li><li>Find requested resource on disk</li><li>Send the response</li><li>Test</li></ol><h3 id=open-tcp-socket>Open TCP socket
+<a href=#open-tcp-socket class=h-anchor aria-hidden=true>#</a></h3><p>In this article we will use <code>ServerSocket</code> class to handle TCP connection. As a homework you can reimplement the server to use the classes from the <code>nio</code> packages.</p><p>So, open your IDE and let&rsquo;s start.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span> String<span style=color:#f92672>[]</span> args <span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> Exception <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span> <span style=color:#f92672>(</span>ServerSocket serverSocket <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ServerSocket<span style=color:#f92672>(</span>8080<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#75715e>// implement client handler here
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span></code></pre></div><p>I want to keep the code concise and clean - it&rsquo;s why I <code>throws Exception</code> instead of implementing good exception handling.
+So as I told, we have to open socket on port 8080 (why not 80? Because to use low port you need root privileges).
+We also need the infinity loop to &lsquo;pause the server&rsquo;.</p><p>Use <code>telnet</code> to test the socket:</p><img src=images/wireshark.png alt=Wireshark class=center style=border-radius:8px><p>Perfect, works.</p><h3 id=accept-client-connection>Accept client connection
+<a href=#accept-client-connection class=h-anchor aria-hidden=true>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>        <span style=color:#66d9ef>try</span> <span style=color:#f92672>(</span>ServerSocket serverSocket <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ServerSocket<span style=color:#f92672>(</span>8080<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>try</span> <span style=color:#f92672>(</span>Socket client <span style=color:#f92672>=</span> serverSocket<span style=color:#f92672>.</span><span style=color:#a6e22e>accept</span><span style=color:#f92672>())</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                    handleClient<span style=color:#f92672>(</span>client<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span></code></pre></div><p>To accept connection from client we have to call <strong>blocking</strong> <code>accept()</code> method. Java program will wait for a client on that line.</p><p>Time to implement the client handler:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>handleClient</span><span style=color:#f92672>(</span>Socket client<span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> IOException <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Debug: got new client &#34;</span> <span style=color:#f92672>+</span> client<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        BufferedReader br <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> BufferedReader<span style=color:#f92672>(</span><span style=color:#66d9ef>new</span> InputStreamReader<span style=color:#f92672>(</span>client<span style=color:#f92672>.</span><span style=color:#a6e22e>getInputStream</span><span style=color:#f92672>()));</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        StringBuilder requestBuilder <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> StringBuilder<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        String line<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> <span style=color:#f92672>(!(</span>line <span style=color:#f92672>=</span> br<span style=color:#f92672>.</span><span style=color:#a6e22e>readLine</span><span style=color:#f92672>()).</span><span style=color:#a6e22e>isBlank</span><span style=color:#f92672>())</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            requestBuilder<span style=color:#f92672>.</span><span style=color:#a6e22e>append</span><span style=color:#f92672>(</span>line <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        String request <span style=color:#f92672>=</span> requestBuilder<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span>request<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span></code></pre></div><p>We have to read the request. How? Just read the input stream from the client&rsquo;s socket. In Java it&rsquo;s not so simple, that&rsquo;s why I made this ugly line</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#66d9ef>new</span> BufferedReader<span style=color:#f92672>(</span><span style=color:#66d9ef>new</span> InputStreamReader<span style=color:#f92672>(</span>client<span style=color:#f92672>.</span><span style=color:#a6e22e>getInputStream</span><span style=color:#f92672>()));</span>
+</span></span></code></pre></div><p>Well, Java.</p><p>Request ends with one empty line (<code>\r\n</code>), remember? Client will send empty line, but imputStream will be still open, we have to read it until one, empty line arrives.</p><p>Run the server, go to <code>http://localhost:8080/</code> and observe logs:</p><img src=images/logs.png alt=Logs class=center style=border-radius:8px><p>It works! We can log the whole request!</p><h3 id=parse-the-request>Parse the request
+<a href=#parse-the-request class=h-anchor aria-hidden=true>#</a></h3><p>Parsing the request is realy simple, I don&rsquo;t think there&rsquo;s any need for further explanation</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>        String request <span style=color:#f92672>=</span> requestBuilder<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        String<span style=color:#f92672>[]</span> requestsLines <span style=color:#f92672>=</span> request<span style=color:#f92672>.</span><span style=color:#a6e22e>split</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        String<span style=color:#f92672>[]</span> requestLine <span style=color:#f92672>=</span> requestsLines<span style=color:#f92672>[</span>0<span style=color:#f92672>].</span><span style=color:#a6e22e>split</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34; &#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        String method <span style=color:#f92672>=</span> requestLine<span style=color:#f92672>[</span>0<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>        String path <span style=color:#f92672>=</span> requestLine<span style=color:#f92672>[</span>1<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>        String version <span style=color:#f92672>=</span> requestLine<span style=color:#f92672>[</span>2<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>        String host <span style=color:#f92672>=</span> requestsLines<span style=color:#f92672>[</span>1<span style=color:#f92672>].</span><span style=color:#a6e22e>split</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34; &#34;</span><span style=color:#f92672>)[</span>1<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        List<span style=color:#f92672>&lt;</span>String<span style=color:#f92672>&gt;</span> headers <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ArrayList<span style=color:#f92672>&lt;&gt;();</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>int</span> h <span style=color:#f92672>=</span> 2<span style=color:#f92672>;</span> h <span style=color:#f92672>&lt;</span> requestsLines<span style=color:#f92672>.</span><span style=color:#a6e22e>length</span><span style=color:#f92672>;</span> h<span style=color:#f92672>++)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            String header <span style=color:#f92672>=</span> requestsLines<span style=color:#f92672>[</span>h<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>            headers<span style=color:#f92672>.</span><span style=color:#a6e22e>add</span><span style=color:#f92672>(</span>header<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        String accessLog <span style=color:#f92672>=</span> String<span style=color:#f92672>.</span><span style=color:#a6e22e>format</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Client %s, method %s, path %s, version %s, host %s, headers %s&#34;</span><span style=color:#f92672>,</span>
+</span></span><span style=display:flex><span>                client<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>(),</span> method<span style=color:#f92672>,</span> path<span style=color:#f92672>,</span> version<span style=color:#f92672>,</span> host<span style=color:#f92672>,</span> headers<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span>accessLog<span style=color:#f92672>);</span>
+</span></span></code></pre></div><p>Just some splits. The only one thing that you may not understand is why we started the loop from 2? Because first line (index 0) is <code>GET / HTTP/1.1</code>, second line is host. The headers start with the third line of the request</p><h3 id=send-response>Send response
+<a href=#send-response class=h-anchor aria-hidden=true>#</a></h3><p>We will send the response to the client&rsquo;s output stream.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>        OutputStream clientOutput <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span><span style=color:#a6e22e>getOutputStream</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;HTTP/1.1 200 OK\r\n&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>((</span><span style=color:#e6db74>&#34;ContentType: text/html\r\n&#34;</span><span style=color:#f92672>).</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;&lt;b&gt;It works!&lt;/b&gt;&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;\r\n\r\n&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>flush</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        client<span style=color:#f92672>.</span><span style=color:#a6e22e>close</span><span style=color:#f92672>();</span>
+</span></span></code></pre></div><p>Do you remember how response should look like?</p><pre tabindex=0><code>version status code
+headers
+(empty line)
+content
+(empty line)
+</code></pre><p>Don&rsquo;t forget to close the output stream.</p><img src=images/it-works.png alt="It works!" class=center style=border-radius:8px><p>Wow, it&rsquo;s really works</p><h3 id=find-requested-resource>Find requested resource
+<a href=#find-requested-resource class=h-anchor aria-hidden=true>#</a></h3><p>We have to implement two methods first</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> String <span style=color:#a6e22e>guessContentType</span><span style=color:#f92672>(</span>Path filePath<span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> IOException <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> Files<span style=color:#f92672>.</span><span style=color:#a6e22e>probeContentType</span><span style=color:#f92672>(</span>filePath<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> Path <span style=color:#a6e22e>getFilePath</span><span style=color:#f92672>(</span>String path<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span><span style=color:#e6db74>&#34;/&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>equals</span><span style=color:#f92672>(</span>path<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/index.html&#34;</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> Paths<span style=color:#f92672>.</span><span style=color:#a6e22e>get</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;/tmp/www&#34;</span><span style=color:#f92672>,</span> path<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span></code></pre></div><p><code>guessContentType</code> - we have to tell to the browser what kind of content we are sending. It&rsquo;s callend <code>content type</code>. Fortunately, there are built-in mechanisms in Java for this. We don&rsquo;t have to make a big switch block.</p><p><code>getFilePath</code> - Before we will return the file - we need to known it location.
+This condition deserves attention</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span><span style=color:#e6db74>&#34;/&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>equals</span><span style=color:#f92672>(</span>path<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/index.html&#34;</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span></code></pre></div><p>If user wants default resource then return <code>index.html</code>.</p><h3 id=send-the-response>Send the response
+<a href=#send-the-response class=h-anchor aria-hidden=true>#</a></h3><p>Do you remember the code that sends response to the user (block of clientOutput.write)? We need to move it to the method</p><pre><code>private static void sendResponse(Socket client, String status, String contentType, byte[] content) throws IOException {
+    OutputStream clientOutput = client.getOutputStream();
+    clientOutput.write((&quot;HTTP/1.1 \r\n&quot; + status).getBytes());
+    clientOutput.write((&quot;ContentType: &quot; + contentType + &quot;\r\n&quot;).getBytes());
+    clientOutput.write(&quot;\r\n&quot;.getBytes());
+    clientOutput.write(content);
+    clientOutput.write(&quot;\r\n\r\n&quot;.getBytes());
+    clientOutput.flush();
+    client.close();
+}
+</code></pre><p>Ok, finally we can return the file</p><pre><code>    Path filePath = getFilePath(path);
+    if (Files.exists(filePath)) {
+        // file exist
+        String contentType = guessContentType(filePath);
+        sendResponse(client, &quot;200 OK&quot;, contentType, Files.readAllBytes(filePath));
+    } else {
+        // 404
+        byte[] notFoundContent = &quot;&lt;h1&gt;Not found :(&lt;/h1&gt;&quot;.getBytes();
+        sendResponse(client, &quot;404 Not Found&quot;, &quot;text/html&quot;, notFoundContent);
+    }
+</code></pre><p>It works!</p><img src=images/it-works-2.png alt="It works!" class=center style=border-radius:8px><p>Finally, we can see html page served by our web server!</p><h2 id=homework>Homework
+<a href=#homework class=h-anchor aria-hidden=true>#</a></h2><ol start=0><li>Make it multi-thread.<ol><li>Create thread pool</li><li>Move handleClient method to separated class and run it in new thread</li></ol></li><li>Rewrite it using non-blocking IO</li><li>Implement POST method<ol><li>Start netcat</li><li>Send some HTML form</li><li>Analyze request</li></ol></li></ol><h2 id=full-source-code>Full source code
+<a href=#full-source-code class=h-anchor aria-hidden=true>#</a></h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#f92672>import</span> java.io.*<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.net.ServerSocket<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.net.Socket<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.nio.file.Files<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.nio.file.Path<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.nio.file.Paths<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.util.ArrayList<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.util.List<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Read the full article https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Server</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span> String<span style=color:#f92672>[]</span> args <span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> Exception <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span> <span style=color:#f92672>(</span>ServerSocket serverSocket <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ServerSocket<span style=color:#f92672>(</span>8080<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>try</span> <span style=color:#f92672>(</span>Socket client <span style=color:#f92672>=</span> serverSocket<span style=color:#f92672>.</span><span style=color:#a6e22e>accept</span><span style=color:#f92672>())</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                    handleClient<span style=color:#f92672>(</span>client<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>handleClient</span><span style=color:#f92672>(</span>Socket client<span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> IOException <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        BufferedReader br <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> BufferedReader<span style=color:#f92672>(</span><span style=color:#66d9ef>new</span> InputStreamReader<span style=color:#f92672>(</span>client<span style=color:#f92672>.</span><span style=color:#a6e22e>getInputStream</span><span style=color:#f92672>()));</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        StringBuilder requestBuilder <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> StringBuilder<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        String line<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> <span style=color:#f92672>(!(</span>line <span style=color:#f92672>=</span> br<span style=color:#f92672>.</span><span style=color:#a6e22e>readLine</span><span style=color:#f92672>()).</span><span style=color:#a6e22e>isBlank</span><span style=color:#f92672>())</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            requestBuilder<span style=color:#f92672>.</span><span style=color:#a6e22e>append</span><span style=color:#f92672>(</span>line <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        String request <span style=color:#f92672>=</span> requestBuilder<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        String<span style=color:#f92672>[]</span> requestsLines <span style=color:#f92672>=</span> request<span style=color:#f92672>.</span><span style=color:#a6e22e>split</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        String<span style=color:#f92672>[]</span> requestLine <span style=color:#f92672>=</span> requestsLines<span style=color:#f92672>[</span>0<span style=color:#f92672>].</span><span style=color:#a6e22e>split</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34; &#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        String method <span style=color:#f92672>=</span> requestLine<span style=color:#f92672>[</span>0<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>        String path <span style=color:#f92672>=</span> requestLine<span style=color:#f92672>[</span>1<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>        String version <span style=color:#f92672>=</span> requestLine<span style=color:#f92672>[</span>2<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>        String host <span style=color:#f92672>=</span> requestsLines<span style=color:#f92672>[</span>1<span style=color:#f92672>].</span><span style=color:#a6e22e>split</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34; &#34;</span><span style=color:#f92672>)[</span>1<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        List<span style=color:#f92672>&lt;</span>String<span style=color:#f92672>&gt;</span> headers <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ArrayList<span style=color:#f92672>&lt;&gt;();</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>int</span> h <span style=color:#f92672>=</span> 2<span style=color:#f92672>;</span> h <span style=color:#f92672>&lt;</span> requestsLines<span style=color:#f92672>.</span><span style=color:#a6e22e>length</span><span style=color:#f92672>;</span> h<span style=color:#f92672>++)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            String header <span style=color:#f92672>=</span> requestsLines<span style=color:#f92672>[</span>h<span style=color:#f92672>];</span>
+</span></span><span style=display:flex><span>            headers<span style=color:#f92672>.</span><span style=color:#a6e22e>add</span><span style=color:#f92672>(</span>header<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        String accessLog <span style=color:#f92672>=</span> String<span style=color:#f92672>.</span><span style=color:#a6e22e>format</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Client %s, method %s, path %s, version %s, host %s, headers %s&#34;</span><span style=color:#f92672>,</span>
+</span></span><span style=display:flex><span>                client<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>(),</span> method<span style=color:#f92672>,</span> path<span style=color:#f92672>,</span> version<span style=color:#f92672>,</span> host<span style=color:#f92672>,</span> headers<span style=color:#f92672>.</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span>accessLog<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        Path filePath <span style=color:#f92672>=</span> getFilePath<span style=color:#f92672>(</span>path<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span>Files<span style=color:#f92672>.</span><span style=color:#a6e22e>exists</span><span style=color:#f92672>(</span>filePath<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e>// file exist
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            String contentType <span style=color:#f92672>=</span> guessContentType<span style=color:#f92672>(</span>filePath<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>            sendResponse<span style=color:#f92672>(</span>client<span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;200 OK&#34;</span><span style=color:#f92672>,</span> contentType<span style=color:#f92672>,</span> Files<span style=color:#f92672>.</span><span style=color:#a6e22e>readAllBytes</span><span style=color:#f92672>(</span>filePath<span style=color:#f92672>));</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span> <span style=color:#66d9ef>else</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e>// 404
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> notFoundContent <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&lt;h1&gt;Not found :(&lt;/h1&gt;&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>            sendResponse<span style=color:#f92672>(</span>client<span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;404 Not Found&#34;</span><span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;text/html&#34;</span><span style=color:#f92672>,</span> notFoundContent<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>sendResponse</span><span style=color:#f92672>(</span>Socket client<span style=color:#f92672>,</span> String status<span style=color:#f92672>,</span> String contentType<span style=color:#f92672>,</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> content<span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> IOException <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        OutputStream clientOutput <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span><span style=color:#a6e22e>getOutputStream</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>((</span><span style=color:#e6db74>&#34;HTTP/1.1 \r\n&#34;</span> <span style=color:#f92672>+</span> status<span style=color:#f92672>).</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>((</span><span style=color:#e6db74>&#34;ContentType: &#34;</span> <span style=color:#f92672>+</span> contentType <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>).</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;\r\n&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span>content<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>write</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;\r\n\r\n&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>getBytes</span><span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>        clientOutput<span style=color:#f92672>.</span><span style=color:#a6e22e>flush</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        client<span style=color:#f92672>.</span><span style=color:#a6e22e>close</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> Path <span style=color:#a6e22e>getFilePath</span><span style=color:#f92672>(</span>String path<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span><span style=color:#e6db74>&#34;/&#34;</span><span style=color:#f92672>.</span><span style=color:#a6e22e>equals</span><span style=color:#f92672>(</span>path<span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/index.html&#34;</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> Paths<span style=color:#f92672>.</span><span style=color:#a6e22e>get</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;/tmp/www&#34;</span><span style=color:#f92672>,</span> path<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> String <span style=color:#a6e22e>guessContentType</span><span style=color:#f92672>(</span>Path filePath<span style=color:#f92672>)</span> <span style=color:#66d9ef>throws</span> IOException <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> Files<span style=color:#f92672>.</span><span style=color:#a6e22e>probeContentType</span><span style=color:#f92672>(</span>filePath<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span></code></pre></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button next"><a href=https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/><span class=button__text>MAKERbuino - solder your own game console and start making games</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mateuszjarzyna-github-io.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>Mateusz Jarzyna</span>
+<span class=logo__cursor></span></a><div class=copyright><span>© 2022 Powered by
+<a href=https://gohugo.io target=_blank rel=noopener>Hugo</a></span>
+<span>Theme created by
+<a href=https://twitter.com/panr target=_blank rel=noopener>panr</a></span></div></div></footer><script src=https://mateuszjarzyna.github.io/assets/main.js></script>
+<script src=https://mateuszjarzyna.github.io/assets/prism.js></script></div></body></html>

@@ -1,0 +1,169 @@
+<!doctype html><html lang=en><head><title>MAKERbuino - solder your own game console and start making games ::
+Mateusz Jarzyna</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Post was originally posted on my old dev.to blog
+I&amp;rsquo;ve been the software developer for several years now. But in this profession there was still an area in which I have exactly 0 experience - gamedev. I know I can watch tutorials about the Unity and build 3d games in two weeks. But to tell you the truth - it&amp;rsquo;s not what I like. I like to know how it exactly works, not only how to use the framework."><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/><link rel=stylesheet href=https://mateuszjarzyna.github.io/assets/style.css><link rel=stylesheet href=https://mateuszjarzyna.github.io/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://mateuszjarzyna.github.io/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://mateuszjarzyna.github.io/img/favicon.png><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://mateuszjarzyna.github.io/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/cover.jpg"><meta name=twitter:title content="MAKERbuino - solder your own game console and start making games"><meta name=twitter:description content="I've been the software developer for several years now. But in this profession there was still an area in which I had exactly 0 experience - gamedev. I know I can watch tutorials about the Unity and build 3d games in two weeks. But to tell you the truth - it's not what I like. I like to know how it *exactly* works, not only how to use the framework."><meta property="og:title" content="MAKERbuino - solder your own game console and start making games"><meta property="og:description" content="I've been the software developer for several years now. But in this profession there was still an area in which I had exactly 0 experience - gamedev. I know I can watch tutorials about the Unity and build 3d games in two weeks. But to tell you the truth - it's not what I like. I like to know how it *exactly* works, not only how to use the framework."><meta property="og:type" content="article"><meta property="og:url" content="https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/"><meta property="og:image" content="https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/cover.jpg"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-03-30T15:00:00+00:00"><meta property="article:modified_time" content="2020-03-30T15:00:00+00:00"><meta property="og:site_name" content="Mateusz Jarzyna"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>Mateusz Jarzyna</span>
+<span class=logo__cursor></span></a>
+<span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/about>About</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/about>About</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>MAKERbuino - solder your own game console and start making games</h1><div class=post-meta><span class=post-date>2020-03-30</span>
+<span class=post-read-time>— 6 min read</span></div><figure class=post-cover><img src=https://mateuszjarzyna.github.io/posts/makerbuino-solder-your-own-game-console-and-start-making-games/cover.jpg alt="MAKERbuino - solder your own game console and start making games"></figure><div class=post-content><h2>Table of Contents</h2><aside class=table-of-contents><nav id=TableOfContents><ul><li><a href=#soldering-the-makerbuino>Soldering the MAKERbuino</a></li><li><a href=#im-game-developer>I&rsquo;m game developer!</a></li><li><a href=#bouncing-ball>Bouncing ball</a></li><li><a href=#pong>PONG</a></li><li><a href=#a-lot-of-fun>A lot of fun</a></li></ul></nav></aside><p>Post was originally posted on <a href=https://dev.to/mateuszjarzyna/makerbuino-solder-your-own-game-console-and-start-making-games-5f0p>my old dev.to blog</a></p><p>I&rsquo;ve been the software developer for several years now. But in this profession there was still an area in which I have exactly 0 experience - gamedev. I know I can watch tutorials about the Unity and build 3d games in two weeks. But to tell you the truth - it&rsquo;s not what I like. I like to know how it <em>exactly</em> works, not only how to use the framework.
+Modern games engines are really, really too complicated to understand them. Even games from &lsquo;90 are too complicated for me - especially when I have no experience in game development, and also too little in C language.
+So I decided to start with the basic. How the games works on yours old, two-color phone? Simple gameplay, low graphic, poor hardware - I think it&rsquo;s the good point to start the journey.</p><h2 id=soldering-the-makerbuino>Soldering the MAKERbuino
+<a href=#soldering-the-makerbuino class=h-anchor aria-hidden=true>#</a></h2><p>There is a toy on the market called <a href=https://www.circuitmess.com/makerbuino/>MAKERbuino</a>. Actually it&rsquo;s <a href=https://gamebuino.com/gamebuino-classic>Gamebiono Classic</a> that you can solder by yourself.</p><img src=images/1.jpeg alt="The box" class=center style=border-radius:8px><p>The box contains few resistors, some buttons, one old screen and so on.</p><img src=images/2.jpeg alt="All parts" class=center style=border-radius:8px><p>I&rsquo;m not sure why my console was delivered with connected battery, but well, doesn&rsquo;t matter, it works anyway.
+To be honest - I&rsquo;m really hopeless in soldering. But hey, practice makes perfect!
+So I prepared all the necessary tool&mldr;</p><img src=images/3.jpeg alt=Tools class=center style=border-radius:8px><p>&mldr; and I started soldering</p><img src=images/4.jpeg alt=Soldering class=center style=border-radius:8px><p>I&rsquo;m such a noob I didn&rsquo;t realize I was soldering with the battery connected!
+The <a href=https://www.circuitmess.com/makerbuino-build-guide/>official guide</a> is really user-friendly. It says that it should take 5 hours, I&rsquo;ve done it in 4.</p><img src=images/5.jpeg alt="Soldered motherboard" class=center style=border-radius:8px><p>Not perfect, not terrible. The most important thing is that it works.
+Four hours and one liter of water later finally I&rsquo;ve soldered the console.</p><img src=images/6.jpeg alt="Assembled console" class=center style=border-radius:8px>
+<img src=images/7.jpeg alt="Assembled console" class=center style=border-radius:8px><p>ound works, screen brightness works, old Nokia&rsquo;s screen works (and can display exactly one color, it&rsquo;s weird nowadays) works. The MAKERbuino comes with SD card (128 MB :), inside there were few build-in games.</p><img src=images/8.gif alt="Build-in game" class=center style=border-radius:8px><p>WOW, everything works, I&rsquo;m so proud of myself.
+There is only one big shortcoming - the &ldquo;click&rdquo; sound, it is sooo loud&mldr;</p><h2 id=im-game-developer>I&rsquo;m game developer!
+<a href=#im-game-developer class=h-anchor aria-hidden=true>#</a></h2><p>ATmega328p-pu - 2kB of RAM and an 8-bit CPU at 16MHz. I&rsquo;ve programmed few times on so poor computer (for example I made a 3d printed fish feeder with Adruino), but sill - nowadays it&rsquo;s a little challenge, I can&rsquo;t use a dozen of frameworks. Also, I have to use skills sightly forgotten by modern programmers - optimization.
+MAKERbuino is built on Arduino, so I had to configure my Arduino IDE. Fortunately <a href=https://www.circuitmess.com/coding-getting-started/>official guide</a> explains very well how to do it. Arduino IDE is not as good as Intellij Idea for example, it&rsquo;s very poor to be honest. But to create 100 lines of code it&rsquo;s good enough.</p><p>So, how to create a game? I don&rsquo;t know. There is no tutorial, no API. But MAKERbuino is after all Gamebuino Classic. So I used the Gamebuino tutorials. Official <a href=https://gamebuino.com/academy>Gabebuino Academy</a> is nice place to start. But it uses the new Gamebuino - with colorful screen and little different API - so I had to forgot about coping-and-pasting. I read those tutorials to understand the process and start thinking like a game developer. I&rsquo;ve also had to use <a href="http://legacy.gamebuino.com/wiki/index.php?title=Reference">old reference</a> to write the code.</p><h2 id=bouncing-ball>Bouncing ball
+<a href=#bouncing-ball class=h-anchor aria-hidden=true>#</a></h2><p>Uploading the game to the console is not the fastest process in the world. And that loud sound of clicking. Fortunately there is an <a href=http://simbuino4web.ppl-pilot.com/>online emulator</a>.
+One hour after reading the Academy I&rsquo;ve made bouncing ball</p><img src=images/9.gif alt=Emulator class=center style=border-radius:8px><p>I have no idea what is that weird sign in right-top corner, doesn&rsquo;t matter. The ball is bouncing!</p><p>Full source code:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Gamebuino.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>Gamebuino gb;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballX <span style=color:#f92672>=</span> LCDWIDTH  <span style=color:#f92672>/</span><span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballSpeedX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballY <span style=color:#f92672>=</span> LCDHEIGHT <span style=color:#f92672>/</span><span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballSpeedY <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>setup</span>() {
+</span></span><span style=display:flex><span>  gb.begin();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  gb.titleScreen(<span style=color:#e6db74>&#34;bouncing ball&#34;</span>);
+</span></span><span style=display:flex><span>}    
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>loop</span>() {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>while</span>(<span style=color:#f92672>!</span>gb.update());
+</span></span><span style=display:flex><span>  gb.display.clear();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (ballX <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    ballSpeedX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (ballX <span style=color:#f92672>==</span> LCDWIDTH <span style=color:#f92672>-</span> <span style=color:#ae81ff>2</span>) {
+</span></span><span style=display:flex><span>    ballSpeedX <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (ballY <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    ballSpeedY <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (ballY <span style=color:#f92672>==</span> LCDHEIGHT <span style=color:#f92672>-</span> <span style=color:#ae81ff>2</span>) {
+</span></span><span style=display:flex><span>    ballSpeedY <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  ballX <span style=color:#f92672>+=</span> ballSpeedX;
+</span></span><span style=display:flex><span>  ballY <span style=color:#f92672>+=</span> ballSpeedY;
+</span></span><span style=display:flex><span>  gb.display.fillRect(ballX, ballY, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Maybe I can optimize and refactor the code, but hey, it&rsquo;s my first &ldquo;game&rdquo; ever.</p><h2 id=pong>PONG
+<a href=#pong class=h-anchor aria-hidden=true>#</a></h2><p>One or two hours later I&rsquo;ve made probably the simplest game ever - the PONG. With &ldquo;Artificial Intelligence&rdquo;! The CPU player is very simple of course</p><pre tabindex=0><code>One or two hours later I&#39;ve made probably the simplest game ever - the PONG. With &#34;Artificial Intelligence&#34;! The CPU player is very simple of course
+</code></pre><img src=images/10.gif alt=Pong class=center style=border-radius:8px><p>The ball was much bigger on the emulator.</p><p>Full source code:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Gamebuino.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>Gamebuino gb;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballX <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballSpeedX <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballY <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballSpeedY <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> ballSize <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> paddleWidth <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> paddleHeight <span style=color:#f92672>=</span> <span style=color:#ae81ff>15</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> playerPaddleY <span style=color:#f92672>=</span> <span style=color:#ae81ff>15</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> playerPaddlePadding <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> cpuPaddleY <span style=color:#f92672>=</span> <span style=color:#ae81ff>15</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> cpuPaddlePadding <span style=color:#f92672>=</span> LCDWIDTH <span style=color:#f92672>-</span> paddleWidth <span style=color:#f92672>-</span> <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> playerScore <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> cpuScore <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>resetBall</span>() {
+</span></span><span style=display:flex><span>  ballX <span style=color:#f92672>=</span> LCDWIDTH  <span style=color:#f92672>/</span><span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>  ballY <span style=color:#f92672>=</span> LCDHEIGHT <span style=color:#f92672>/</span><span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (random(<span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>2</span>) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    ballSpeedX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>    ballSpeedX <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (random(<span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>2</span>) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    ballSpeedY <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>; 
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>    ballSpeedY <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>setup</span>() {
+</span></span><span style=display:flex><span>  gb.begin();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  gb.titleScreen(<span style=color:#e6db74>&#34;super gra&#34;</span>);
+</span></span><span style=display:flex><span>  resetBall();
+</span></span><span style=display:flex><span>}    
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>loop</span>() {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>while</span>(<span style=color:#f92672>!</span>gb.update());
+</span></span><span style=display:flex><span>  gb.display.clear();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (ballX <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// player lose
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    cpuScore<span style=color:#f92672>++</span>;
+</span></span><span style=display:flex><span>    resetBall();
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (ballX <span style=color:#f92672>==</span> LCDWIDTH <span style=color:#f92672>-</span> ballSize) {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// cpu lose
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    playerScore<span style=color:#f92672>++</span>;
+</span></span><span style=display:flex><span>    resetBall();
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (ballY <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    ballSpeedY <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (ballY <span style=color:#f92672>==</span> LCDHEIGHT <span style=color:#f92672>-</span> ballSize) {
+</span></span><span style=display:flex><span>    ballSpeedY <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (ballX <span style=color:#f92672>==</span> playerPaddlePadding <span style=color:#f92672>+</span> paddleWidth
+</span></span><span style=display:flex><span>      <span style=color:#f92672>&amp;&amp;</span> ballY <span style=color:#f92672>&gt;=</span> playerPaddleY
+</span></span><span style=display:flex><span>      <span style=color:#f92672>&amp;&amp;</span> ballY <span style=color:#f92672>&lt;=</span> playerPaddleY <span style=color:#f92672>+</span> paddleHeight) {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// touch player&#39;s paddle
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    ballSpeedX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (ballX <span style=color:#f92672>==</span> cpuPaddlePadding <span style=color:#f92672>-</span> ballSize
+</span></span><span style=display:flex><span>      <span style=color:#f92672>&amp;&amp;</span> ballY <span style=color:#f92672>&gt;=</span> cpuPaddleY
+</span></span><span style=display:flex><span>      <span style=color:#f92672>&amp;&amp;</span> ballY <span style=color:#f92672>&lt;=</span> cpuPaddleY <span style=color:#f92672>+</span> paddleHeight) {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// touch cpu&#39;s paddle
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    ballSpeedX <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  ballX <span style=color:#f92672>+=</span> ballSpeedX;
+</span></span><span style=display:flex><span>  ballY <span style=color:#f92672>+=</span> ballSpeedY;
+</span></span><span style=display:flex><span>  gb.display.fillRect(ballX, ballY, ballSize, ballSize);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (gb.buttons.repeat(BTN_UP, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>&amp;&amp;</span> playerPaddleY <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    playerPaddleY <span style=color:#f92672>-=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (gb.buttons.repeat(BTN_DOWN, <span style=color:#ae81ff>0</span>) <span style=color:#f92672>&amp;&amp;</span> playerPaddleY <span style=color:#f92672>&lt;</span> LCDHEIGHT <span style=color:#f92672>-</span> paddleHeight) {
+</span></span><span style=display:flex><span>    playerPaddleY <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> cpuPaddleCenter <span style=color:#f92672>=</span> (cpuPaddleY <span style=color:#f92672>+</span> paddleHeight) <span style=color:#f92672>/</span> <span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (cpuPaddleCenter <span style=color:#f92672>&gt;</span> ballY <span style=color:#f92672>&amp;&amp;</span> cpuPaddleY <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) {
+</span></span><span style=display:flex><span>    cpuPaddleY<span style=color:#f92672>--</span>;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (cpuPaddleCenter <span style=color:#f92672>&lt;</span> ballY <span style=color:#f92672>&amp;&amp;</span> cpuPaddleY <span style=color:#f92672>&lt;</span> LCDHEIGHT <span style=color:#f92672>-</span> paddleHeight) {
+</span></span><span style=display:flex><span>    cpuPaddleY<span style=color:#f92672>++</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  gb.display.fillRect(playerPaddlePadding, playerPaddleY, paddleWidth, paddleHeight);
+</span></span><span style=display:flex><span>  gb.display.fillRect(cpuPaddlePadding, cpuPaddleY, paddleWidth, paddleHeight);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  gb.display.cursorY <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span>  gb.display.cursorX <span style=color:#f92672>=</span> <span style=color:#ae81ff>10</span>;
+</span></span><span style=display:flex><span>  gb.display.print(playerScore);
+</span></span><span style=display:flex><span>  gb.display.cursorX <span style=color:#f92672>=</span> LCDWIDTH <span style=color:#f92672>-</span> <span style=color:#ae81ff>13</span>;
+</span></span><span style=display:flex><span>  gb.display.print(cpuScore);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Now I see that I should refactor my code. But I&rsquo;m satisfied and so proud of myself.</p><h2 id=a-lot-of-fun>A lot of fun
+<a href=#a-lot-of-fun class=h-anchor aria-hidden=true>#</a></h2><p>New experiences are always full of a fun, in this case a lot of fun. Soldering, making game from &lsquo;70 - I had a nice time. Maybe it&rsquo;s not suitable for CV, but it&rsquo;s still a lot of experience.
+If you are a fan of electronic - I can recommend from the bottom of my heart. It&rsquo;s time to finish this post and finish &ldquo;snake&rdquo; game. And later maybe Micro Machines, who knows&mldr;</p></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://mateuszjarzyna.github.io/posts/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method/><span class=button__icon>←</span>
+<span class=button__text>Build your own HTTP server in Java in less than one hour (only GET method)</span></a></span>
+<span class="button next"><a href=https://mateuszjarzyna.github.io/posts/linux-s-commands-and-tricks-i-m-using-in-my-daily-job-as-a-developer/><span class=button__text>Linux's commands and tricks I'm using in my daily job as a developer</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//mateuszjarzyna-github-io.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>Mateusz Jarzyna</span>
+<span class=logo__cursor></span></a><div class=copyright><span>© 2022 Powered by
+<a href=https://gohugo.io target=_blank rel=noopener>Hugo</a></span>
+<span>Theme created by
+<a href=https://twitter.com/panr target=_blank rel=noopener>panr</a></span></div></div></footer><script src=https://mateuszjarzyna.github.io/assets/main.js></script>
+<script src=https://mateuszjarzyna.github.io/assets/prism.js></script></div></body></html>
