@@ -18,7 +18,11 @@ Because the Earth is moving, rotating all the time, the noon is in only one plac
 
 Imagine having a friend on the other side of the globe. You ask him to call you afternoon...
 
+{{< image src="images/call-me.png" alt="" position="center" style="border-radius: 8px;" >}}
+
 ... but he doesn’t call and doesn’t answer his phone. Why?
+
+{{< image src="images/zzz.png" alt="" position="center" style="border-radius: 8px;" >}}
 
 You ask him to call at 5pm, but 5pm at his region will be in 10 hours, but in your region, in your country the 5pm is right now. What you see on your watch is called *local time*. And your friend, on the other hand, has different local time. This is a known and already solved issue. Some years ago, some smart guy divided the Earth into smaller regions called the **time zones**. If you and your friend are both in the same time zone, it means that the sun rises approximately at the same time in your house and in his house.
 
@@ -30,9 +34,15 @@ You probably already known this and understand the concept perfectly. But when y
 
 Imagine an eruption of a volcano. The volcano exploded at 8am PST time, it was 8pm at ALMT zone. In the space, in the ISS was 2pm. The clue is that the eruption is an event on the Earth timeline.
 
+{{< image src="images/eruption.png" alt="" position="center" style="border-radius: 8px;" >}}
+
 We can write a date referring to that event, as we do with years. You probably know the notation *Before Christ* or *Current Era*, 2022 BC/CE, similar concept.
 
+{{< image src="images/timeline.png" alt="" position="center" style="border-radius: 8px;" >}}
+
 Now you can schedule a meeting with your friend using this precise notation.
+
+{{< image src="images/using-timestamp.png" alt="" position="center" style="border-radius: 8px;" >}}
 
 In computer since, commonly used is `unix time`, the number of seconds (or milliseconds) that have elapsed since 1 January 1970, 00:00:00 UTC.
 
