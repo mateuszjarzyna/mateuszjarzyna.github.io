@@ -6,6 +6,7 @@ theme = "hello-friend"
 paginate = 5
 
 disqusShortname = 'mateuszjarzyna-github-io'
+googleAnalytics = "G-VC5ZBY5XE8"
 
 [params]
   # dir name of your blog content (default is `content/posts`).
