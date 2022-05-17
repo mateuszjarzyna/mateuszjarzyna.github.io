@@ -2,7 +2,7 @@
 title: "How to test a code that uses time? - Improve quality of your project, part I"
 date: 2022-05-16T15:00:00Z
 draft: false
-description: "Java has amazing `java.time` package. There are few usefull classes like `LocalDateTime`, `ZonedDateTime`, `Instant` or `Clock`. But do you know how to use them? If you are using untestable `Instant.now()` syntax - you probably should read this post."
+description: "Java has amazing `java.time` package. There are few useful classes like `LocalDateTime`, `ZonedDateTime`, `Instant` or `Clock`. But do you know how to use them? If you are using untestable `Instant.now()` syntax - you probably should read this post."
 ---
 
 Java has amazing `java.time` package. There are few useful classes like `LocalDateTime`, `ZonedDateTime`, `Instant` or `Clock`. But do you know how to use them? If you are using untestable `Instant.now()` syntax - you probably should read this post.
@@ -10,7 +10,7 @@ Java has amazing `java.time` package. There are few useful classes like `LocalDa
 ## Concepts you must understand
 
 In the very first step, you must understand a few concepts that not everybody understood. If you know the theory, just skip to the section with code.
-Below, I will try to explain why always using `LocalDateTime` is not a good idea, and you most likely should use `ZonedDateTime` or `Instant`.
+Below, I will try to explain why using always the `LocalDateTime` is not a good idea, and you most likely should use `ZonedDateTime` or `Instant`.
 
 ### Timezones
 
@@ -24,7 +24,7 @@ Imagine having a friend on the other side of the globe. You ask him to call you 
 
 {{< image src="images/zzz.png" alt="" position="center" style="border-radius: 8px;" >}}
 
-You ask him to call at 5pm, but 5pm at his region will be in 10 hours, but in your region, in your country the 5pm is right now. What you see on your watch is called *local time*. And your friend, on the other hand, has different local time. This is a known and already solved issue. Some years ago, some smart guy divided the Earth into smaller regions called the **time zones**. If you and your friend are both in the same time zone, it means that the sun rises approximately at the same time in your house and in his house.
+You ask him to call at 5pm, but 5pm at his region will be in 10 hours, but in your region, in your country the 5pm is right now. What you see on your watch is called *local time*. And your friend, on the other hand, has different local time. This is a known and already solved issue. Some years ago, some smart guy divided the Earth into smaller regions called the **time zones**. If you and your friend are both in the same time zone, it means that the sun rises approximately at the same time in your and in his house.
 
 You probably already known this and understand the concept perfectly. But when you are coding, you should consciously decide whether you need to operate on local time or on the time with a time zone.
 
@@ -44,7 +44,7 @@ Now you can schedule a meeting with your friend using this precise notation.
 
 {{< image src="images/using-timestamp.png" alt="" position="center" style="border-radius: 8px;" >}}
 
-In computer since, commonly used is `unix time`, the number of seconds (or milliseconds) that have elapsed since 1 January 1970, 00:00:00 UTC.
+In computer since, the `unix time` is used commonly, the number of seconds (or milliseconds) that have elapsed since 1 January 1970, 00:00:00 UTC.
 
 ### Timestamp vs local date
 
@@ -54,7 +54,7 @@ Short summary:
 - *Local date* - what you see on your watch. Represented by `LocalDateTime`, `LocalDate`, `LocalTime`.
 - *Date with timezone* - time displayed on all watches in a some geographical area. Represented by `ZonedDateTime` and `ZoneId` classes. It’s like `Instant` with `ZoneId`.
 
-It’s critical to choose the right type for the problem and not mindlessly, always use  LocalDateTime. You want to read more there is wonderful [Java 8 Time - choosing the right object](https://mattgreencroft.blogspot.com/2014/12/java-8-time-choosing-right-object.html) and amazing [StackOverflow answer](https://stackoverflow.com/questions/32437550/whats-the-difference-between-instant-and-localdatetime).
+It’s critical to choose the right type for the problem and not mindlessly, always use a LocalDateTime. If you want to read more - there is wonderful [Java 8 Time - choosing the right object](https://mattgreencroft.blogspot.com/2014/12/java-8-time-choosing-right-object.html) article and amazing [StackOverflow answer](https://stackoverflow.com/questions/32437550/whats-the-difference-between-instant-and-localdatetime).
 
 Java has more useful classes like `DayOfWeek` or `Duration`, but we won’t focus on them.
 
@@ -76,7 +76,7 @@ public class ResetPasswordService {
             this.emailSender = emailSender;
         }
         
-				public void sendToken(UserId userId) {
+        public void sendToken(UserId userId) {
             var validTill = Instant.now().plus(48, HOURS);
             var token = generateToken();
             var tokenEntity = new TokenEntity(
@@ -92,7 +92,7 @@ public class ResetPasswordService {
             return new Token("xyz");
         }
         
-				public void resetPassword(UserId userId, Token token, Password newPass) {
+        public void resetPassword(UserId userId, Token token, Password newPass) {
             var entity = repository.findByUserIdAndToken(userId, token)
                     .orElseThrow(TokenNotFoundException::new);
             
@@ -133,7 +133,7 @@ Can we test these two methods? We can, but no easy, not fully and *dirty*.
     }
 ```
 
-During the test, we generated the token and verified the email that was sent to a user. We can assert the token, but we cannot assert the validity time. I mean, we can check if it’s not null and if it is in the future, but there is no easy way to assert the value. The value should be `Instant.now().minus(few, MILLISECONDS)`, but we don’t know the exact value, only approximately, with few milliseconds' epsilon.
+During the test, we've generated the token and verified the email that was sent to a user. We can assert the token, but we cannot assert the validity time. I mean, we can check if it’s not null and if it is in the future, but there is no easy way to assert the value. The value should be `Instant.now().minus(few, MILLISECONDS)`, but we don’t know the exact value, only approximately, with few milliseconds' epsilon.
 Maybe we can unit test the `restPassword` method? Let’s see what we can do.
 
 ```java
@@ -173,11 +173,11 @@ Maybe we can unit test the `restPassword` method? Let’s see what we can do.
     }
 ```
 
-As you can see, we can test the `resetPassword` method. But are these test goods? As you can see, we have to insert entities directly to the database. Also, we have to simulate the time when the token was generated. Unit tests should not insert any data to the repository, we do it better.
+As you can see, we can test the `resetPassword` method. But are these test goods? As you can see, we have to insert entities directly to the database. Also, we have to simulate the time when the token was generated. Unit tests should not insert any data to the repository, we can do it better.
 
 ### Clock
 
-Java has the `Clock` class. For the first time the class seems to be useless, calling the `clock.instant()` gives you the same result as `Instant.now()`, but `Clock` has no static method, and you have to inject an additional bean. Looks like overkill, but the advantage is that we can inject different implementation during the tests. Try to add the Clock to our service class.
+Java has the `Clock` class. For the first time this class seems to be useless, calling the `clock.instant()` gives you the same result as `Instant.now()`, but `Clock` has no static method, and you have to inject an additional bean. Looks like overkill, but the advantage is that we can inject different implementation during the tests. Try to add the Clock to our service class.
 
 ```java
 public static class ResetPasswordService {
@@ -236,7 +236,7 @@ There is one thing to explain
 clock.system(TIME_ZONE)
 ```
 
-It’s the implementation of the clock that return the time from the system clock. We have to provide some time zone, the zone is use *to convert the instant to zoned date-time*.
+It’s the implementation of the clock that return the time from the system clock. We have to provide some time zone, the zone is used *to convert the instant to zoned date-time*.
 
 ```java
     @Test
@@ -305,36 +305,31 @@ public static class ResetPasswordService {
 Finally, create implementation and register a bean
 
 ```java
-public static class ResetPasswordService {
+@Configuration
+class ClockConfiguration {
 
-        private final ResetPasswordTokensRepository repository;
-        private final EmailSender emailSender;
-        private final TimeProvider timeProvider;
-
-        public ResetPasswordService(
-                ResetPasswordTokensRepository repository,
-                EmailSender emailSender,
-                TimeProvider timeProvider
-        ) {
-            this.repository = repository;
-            this.emailSender = emailSender;
-            this.timeProvider = timeProvider;
-        }
-
-        public void sendToken(UserId userId) {
-            var validTill = timeProvider.instant().plus(48, HOURS);
-            // ..
-        }
-
-        public void resetPassword(UserId userId, Token token, Password newPass) {
-            // ...
-            if (entity.validTill().isAfter(timeProvider.instant())) {
-                throw new TokenExpiredException();
-            }
-            // ...
-        }
-
+    @Bean
+    Clock clock() {
+        return Clock.system(TIME_ZONE);
     }
+
+    @Bean
+    TimeProvider timeProvider(Clock clock) {
+        return new ProductionTimeProvider(clock);
+    }
+
+    @RequiredArgsConstructor
+    static class ProductionTimeProvider implements TimeProvider {
+
+        private final Clock clock;
+
+        @Override
+        public Instant instant() {
+            return clock.instant();
+        }
+    }
+
+}
 ```
 
 You may think this is all pointless, the `TimeProvider` interface boils down to `Instant.now()` call. It may look overcomplicated, but wait for second, test’s implementation.
@@ -411,5 +406,3 @@ I hope it starts to make sense. We’ve created the class that allows us to *tim
 See? We can simulate the passage of time by calling `timeProvider.elapse(100, DAYS);` and peek current instant during the test by calling `timeProvider.instant()`. It’s why we created a seemingly useless interface.
 
 I hope you will add the `TimeProvider` to your next project, happy testing!
-
-
