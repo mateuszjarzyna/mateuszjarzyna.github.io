@@ -5,7 +5,7 @@ Concepts you must understand
 &lt;a href="#concepts-you-must-understand" class="h-anchor" aria-hidden="true">#&lt;/a>
 &lt;/h2>
 &lt;p>In the very first step, you must understand a few concepts that not everybody understood. If you know the theory, just skip to the section with code.
-Below, I will try to explain why always using &lt;code>LocalDateTime&lt;/code> is not a good idea, and you most likely should use &lt;code>ZonedDateTime&lt;/code> or &lt;code>Instant&lt;/code>.&lt;/p>
+Below, I will try to explain why using always the &lt;code>LocalDateTime&lt;/code> is not a good idea, and you most likely should use &lt;code>ZonedDateTime&lt;/code> or &lt;code>Instant&lt;/code>.&lt;/p>
 &lt;h3 id="timezones">
 Timezones
 &lt;a href="#timezones" class="h-anchor" aria-hidden="true">#&lt;/a>
@@ -15,7 +15,7 @@ Timezones
 &lt;img src="images/call-me.png" class="center" style="border-radius: 8px;" />
 &lt;p>&amp;hellip; but he doesn’t call and doesn’t answer his phone. Why?&lt;/p>
 &lt;img src="images/zzz.png" class="center" style="border-radius: 8px;" />
-&lt;p>You ask him to call at 5pm, but 5pm at his region will be in 10 hours, but in your region, in your country the 5pm is right now. What you see on your watch is called &lt;em>local time&lt;/em>. And your friend, on the other hand, has different local time. This is a known and already solved issue. Some years ago, some smart guy divided the Earth into smaller regions called the &lt;strong>time zones&lt;/strong>. If you and your friend are both in the same time zone, it means that the sun rises approximately at the same time in your house and in his house.&lt;/p>
+&lt;p>You ask him to call at 5pm, but 5pm at his region will be in 10 hours, but in your region, in your country the 5pm is right now. What you see on your watch is called &lt;em>local time&lt;/em>. And your friend, on the other hand, has different local time. This is a known and already solved issue. Some years ago, some smart guy divided the Earth into smaller regions called the &lt;strong>time zones&lt;/strong>. If you and your friend are both in the same time zone, it means that the sun rises approximately at the same time in your and in his house.&lt;/p>
 &lt;p>You probably already known this and understand the concept perfectly. But when you are coding, you should consciously decide whether you need to operate on local time or on the time with a time zone.&lt;/p>
 &lt;h3 id="timestamp">
 Timestamp
@@ -28,7 +28,7 @@ Timestamp
 &lt;img src="images/timeline.png" class="center" style="border-radius: 8px;" />
 &lt;p>Now you can schedule a meeting with your friend using this precise notation.&lt;/p>
 &lt;img src="images/using-timestamp.png" class="center" style="border-radius: 8px;" />
-&lt;p>In computer since, commonly used is &lt;code>unix time&lt;/code>, the number of seconds (or milliseconds) that have elapsed since 1 January 1970, 00:00:00 UTC.&lt;/p>
+&lt;p>In computer since, the &lt;code>unix time&lt;/code> is used commonly, the number of seconds (or milliseconds) that have elapsed since 1 January 1970, 00:00:00 UTC.&lt;/p>
 &lt;h3 id="timestamp-vs-local-date">
 Timestamp vs local date
 &lt;a href="#timestamp-vs-local-date" class="h-anchor" aria-hidden="true">#&lt;/a>
@@ -39,7 +39,7 @@ Timestamp vs local date
 &lt;li>&lt;em>Local date&lt;/em> - what you see on your watch. Represented by &lt;code>LocalDateTime&lt;/code>, &lt;code>LocalDate&lt;/code>, &lt;code>LocalTime&lt;/code>.&lt;/li>
 &lt;li>&lt;em>Date with timezone&lt;/em> - time displayed on all watches in a some geographical area. Represented by &lt;code>ZonedDateTime&lt;/code> and &lt;code>ZoneId&lt;/code> classes. It’s like &lt;code>Instant&lt;/code> with &lt;code>ZoneId&lt;/code>.&lt;/li>
 &lt;/ul>
-&lt;p>It’s critical to choose the right type for the problem and not mindlessly, always use LocalDateTime. You want to read more there is wonderful &lt;a href="https://mattgreencroft.blogspot.com/2014/12/java-8-time-choosing-right-object.html">Java 8 Time - choosing the right object&lt;/a> and amazing &lt;a href="https://stackoverflow.com/questions/32437550/whats-the-difference-between-instant-and-localdatetime">StackOverflow answer&lt;/a>.&lt;/p>
+&lt;p>It’s critical to choose the right type for the problem and not mindlessly, always use a LocalDateTime. If you want to read more - there is wonderful &lt;a href="https://mattgreencroft.blogspot.com/2014/12/java-8-time-choosing-right-object.html">Java 8 Time - choosing the right object&lt;/a> article and amazing &lt;a href="https://stackoverflow.com/questions/32437550/whats-the-difference-between-instant-and-localdatetime">StackOverflow answer&lt;/a>.&lt;/p>
 &lt;p>Java has more useful classes like &lt;code>DayOfWeek&lt;/code> or &lt;code>Duration&lt;/code>, but we won’t focus on them.&lt;/p>
 &lt;h2 id="example-typical-app">
 Example, typical app
@@ -101,7 +101,7 @@ Example, typical app
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">hasToken&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;xyz&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isInTheFuture&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>During the test, we generated the token and verified the email that was sent to a user. We can assert the token, but we cannot assert the validity time. I mean, we can check if it’s not null and if it is in the future, but there is no easy way to assert the value. The value should be &lt;code>Instant.now().minus(few, MILLISECONDS)&lt;/code>, but we don’t know the exact value, only approximately, with few milliseconds&amp;rsquo; epsilon.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>During the test, we&amp;rsquo;ve generated the token and verified the email that was sent to a user. We can assert the token, but we cannot assert the validity time. I mean, we can check if it’s not null and if it is in the future, but there is no easy way to assert the value. The value should be &lt;code>Instant.now().minus(few, MILLISECONDS)&lt;/code>, but we don’t know the exact value, only approximately, with few milliseconds&amp;rsquo; epsilon.
 Maybe we can unit test the &lt;code>restPassword&lt;/code> method? Let’s see what we can do.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@Test&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">should_throw_exception_when_token_is_expired&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
@@ -137,12 +137,12 @@ Maybe we can unit test the &lt;code>restPassword&lt;/code> method? Let’s see w
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> assertThat&lt;span style="color:#f92672">(&lt;/span>userId&lt;span style="color:#f92672">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">hasPassword&lt;/span>&lt;span style="color:#f92672">(&lt;/span>newPass&lt;span style="color:#f92672">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, we can test the &lt;code>resetPassword&lt;/code> method. But are these test goods? As you can see, we have to insert entities directly to the database. Also, we have to simulate the time when the token was generated. Unit tests should not insert any data to the repository, we do it better.&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, we can test the &lt;code>resetPassword&lt;/code> method. But are these test goods? As you can see, we have to insert entities directly to the database. Also, we have to simulate the time when the token was generated. Unit tests should not insert any data to the repository, we can do it better.&lt;/p>
 &lt;h3 id="clock">
 Clock
 &lt;a href="#clock" class="h-anchor" aria-hidden="true">#&lt;/a>
 &lt;/h3>
-&lt;p>Java has the &lt;code>Clock&lt;/code> class. For the first time the class seems to be useless, calling the &lt;code>clock.instant()&lt;/code> gives you the same result as &lt;code>Instant.now()&lt;/code>, but &lt;code>Clock&lt;/code> has no static method, and you have to inject an additional bean. Looks like overkill, but the advantage is that we can inject different implementation during the tests. Try to add the Clock to our service class.&lt;/p>
+&lt;p>Java has the &lt;code>Clock&lt;/code> class. For the first time this class seems to be useless, calling the &lt;code>clock.instant()&lt;/code> gives you the same result as &lt;code>Instant.now()&lt;/code>, but &lt;code>Clock&lt;/code> has no static method, and you have to inject an additional bean. Looks like overkill, but the advantage is that we can inject different implementation during the tests. Try to add the Clock to our service class.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ResetPasswordService&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> ResetPasswordTokensRepository repository&lt;span style="color:#f92672">;&lt;/span>
@@ -189,7 +189,7 @@ Clock
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>There is one thing to explain&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>clock&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">system&lt;/span>&lt;span style="color:#f92672">(&lt;/span>TIME_ZONE&lt;span style="color:#f92672">)&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It’s the implementation of the clock that return the time from the system clock. We have to provide some time zone, the zone is use &lt;em>to convert the instant to zoned date-time&lt;/em>.&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It’s the implementation of the clock that return the time from the system clock. We have to provide some time zone, the zone is used &lt;em>to convert the instant to zoned date-time&lt;/em>.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@Test&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">should_generate_token&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> var today &lt;span style="color:#f92672">=&lt;/span> Instant&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">parse&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2022-04-22T18:00:00.000Z&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
@@ -245,36 +245,31 @@ Custom time provider
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Finally, create implementation and register a bean&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ResetPasswordService&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">@Configuration&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClockConfiguration&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> ResetPasswordTokensRepository repository&lt;span style="color:#f92672">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> EmailSender emailSender&lt;span style="color:#f92672">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> TimeProvider timeProvider&lt;span style="color:#f92672">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">ResetPasswordService&lt;/span>&lt;span style="color:#f92672">(&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ResetPasswordTokensRepository repository&lt;span style="color:#f92672">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> EmailSender emailSender&lt;span style="color:#f92672">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> TimeProvider timeProvider
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">repository&lt;/span> &lt;span style="color:#f92672">=&lt;/span> repository&lt;span style="color:#f92672">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">emailSender&lt;/span> &lt;span style="color:#f92672">=&lt;/span> emailSender&lt;span style="color:#f92672">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">timeProvider&lt;/span> &lt;span style="color:#f92672">=&lt;/span> timeProvider&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@Bean&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Clock &lt;span style="color:#a6e22e">clock&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> Clock&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">system&lt;/span>&lt;span style="color:#f92672">(&lt;/span>TIME_ZONE&lt;span style="color:#f92672">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">sendToken&lt;/span>&lt;span style="color:#f92672">(&lt;/span>UserId userId&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> var validTill &lt;span style="color:#f92672">=&lt;/span> timeProvider&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">instant&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">plus&lt;/span>&lt;span style="color:#f92672">(&lt;/span>48&lt;span style="color:#f92672">,&lt;/span> HOURS&lt;span style="color:#f92672">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// ..
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">resetPassword&lt;/span>&lt;span style="color:#f92672">(&lt;/span>UserId userId&lt;span style="color:#f92672">,&lt;/span> Token token&lt;span style="color:#f92672">,&lt;/span> Password newPass&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// ...
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>entity&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">validTill&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">isAfter&lt;/span>&lt;span style="color:#f92672">(&lt;/span>timeProvider&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">instant&lt;/span>&lt;span style="color:#f92672">()))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> TokenExpiredException&lt;span style="color:#f92672">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@Bean&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> TimeProvider &lt;span style="color:#a6e22e">timeProvider&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Clock clock&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ProductionTimeProvider&lt;span style="color:#f92672">(&lt;/span>clock&lt;span style="color:#f92672">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// ...
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@RequiredArgsConstructor&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ProductionTimeProvider&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> TimeProvider &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> Clock clock&lt;span style="color:#f92672">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> Instant &lt;span style="color:#a6e22e">instant&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> clock&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">instant&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>You may think this is all pointless, the &lt;code>TimeProvider&lt;/code> interface boils down to &lt;code>Instant.now()&lt;/code> call. It may look overcomplicated, but wait for second, test’s implementation.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestTimeProvider&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> TimeProvider &lt;span style="color:#f92672">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
